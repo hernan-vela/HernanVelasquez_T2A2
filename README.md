@@ -20,4 +20,7 @@ Steps to create code the API:
     GRANT ALL ON SCHEMA public to hernan_dev;
     ```
 
-3. Create ```models``` folder and store here a model representing each one of the entities: UserProfile, Books, Bookshelf, StoredBook, BookComment
+3. Create ```models``` folder and store here a model representing each one of the entities: user_profile, books, bookshelf, stored_book, book_comment
+
+4. Create ```controllers``` folder and store here the **commands line interface** (cli) as ```cli_controllers.py```
+

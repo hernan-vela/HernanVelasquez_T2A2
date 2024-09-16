@@ -2,7 +2,7 @@ from init import db, ma, bcrypt, jwt
 
 class User(db.Model):
     # Name of the table
-    __tablename__ = "UserProfile"
+    __tablename__ = "user_profile"
 
     # Attributes of the table
     user_id = db.Column(db.Integer, primary_key=True)
