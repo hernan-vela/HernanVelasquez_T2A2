@@ -24,3 +24,7 @@ Steps to create code the API:
 
 4. Create ```controllers``` folder and store here the **commands line interface** (cli) as ```cli_controllers.py```
 
+5. In the ```cli_controllers.py``` we create functions to **create**, **seed** and **drop** tables. At the 'seed' command we create as many instances as we wish (at least two) that illustrate keys in the table, as examples.
+
+6. In the ```auth_controller.py``` we  load the Blueprint for the authorisation feature, register the Blueprint in the ```main.py```, and create routes to **register** and **login** a user. Usually the sequence for the route is: get --> add --> commit --> dump.
+
