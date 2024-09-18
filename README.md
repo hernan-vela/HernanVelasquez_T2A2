@@ -28,3 +28,6 @@ Steps to create code the API:
 
 6. In the ```auth_controller.py``` we  load the Blueprint for the authorisation feature, register the Blueprint in the ```main.py```, and create routes to **register** and **login** a user. Usually the sequence for the route is: get --> add --> commit --> dump.
 
+7. Create a model for entity ```user_profile``` and define relationship between this entity and ```bookshelf`` entity.
+
+8. Create a model for entity ```bookshelf``` and define relationship between this entity and ```bookshelf``` entity. This same process will apply for the rest of the models and their respective relationships.
