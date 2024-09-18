@@ -1,4 +1,6 @@
 from init import db, ma, bcrypt, jwt
+# unpack information of entities to establish relationship
+from marshmallow import fields
 
 class User(db.Model):
     # Name of the table
@@ -14,7 +16,8 @@ class User(db.Model):
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ("user_id", "name", "email", "user_name", "password", "is_admin")
+        bookshelf = fields.List(fields.Nested('BookshelfSchema', exclude=["user"]))
+        fields = ("user_id", "name", "email", "user_name", "password", "is_admin", "bookshelf")
 
 # to handle a single user object
 user_schema = UserSchema(exclude=["password"])
