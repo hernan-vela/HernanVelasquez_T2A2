@@ -14,6 +14,9 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
+# relationship between entities bookshelf --> user_profile
+    bookshelf = db.relationship('Bookshelf', back_populates='user_profile')
+
 class UserSchema(ma.Schema):
     class Meta:
         bookshelf = fields.List(fields.Nested('BookshelfSchema', exclude=["user"]))
