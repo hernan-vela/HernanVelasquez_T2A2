@@ -17,12 +17,13 @@ def register_user():
         # create an instance of the User Model
         user = User(
             name = body_data.get("name"),
-            email = body_data.get("email")
+            email = body_data.get("email"),
+            user_name = body_data.get("user_name")
         )
         # hash the password
         password = body_data.get("password")
         if password:
-            user.passowrd = bcrypt.generate_password_hash(password).decode("utf-8")
+            user.password = bcrypt.generate_password_hash(password).decode("utf-8")
         # add and commit to book_shelves db
         db.session.add(user)
         db.session.commit()
@@ -40,17 +41,17 @@ def login_user():
     # get the data from the body of the request
     body_data = request.get_json()
     # find the user in books_shelves with that email address
-    stmt = db.select(User).filter_by(email=body_data["email"])
+    stmt = db.select(User).filter_by(email=body_data.get("email"))
     user = db.session.scalar(stmt)
-    # If user exists and password is correct
+    # if user exists and password is correct
     if user and bcrypt.check_password_hash(user.password, body_data.get("password")):
         # create JWT
-        token = create_access_token(identity=str(user.id), expire_delta=timedelta(days=1))
+        token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(days=1))
         # respond back
         return {"email": user.email, "is_admin": user.is_admin, "token": token}
     # else
     else:
         # respond back with an error message
-        return {"error": "Email of password incorrect"}, 400
+        return {"error": "Email or password incorrect"}, 400
 
 
