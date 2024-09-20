@@ -4,7 +4,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from init import db
-from models.bookshelf import Bookshelf, bookshelf_schema, bookshelves_schema
+from models.bookshelves import Bookshelf, bookshelf_schema, bookshelves_schema
 
 
 bookshelf_bp = Blueprint("bookshelf", __name__, url_prefix="/bookshelf")
@@ -28,13 +28,12 @@ def get_a_bookshelf(bookshelf_id):
 
 # /bookshelf - POST - create a new bookshelf
 @bookshelf_bp.route("/", methods=["POST"])
-@jwt_required
+@jwt_required()
 def create_bookshelf():
     # get the data from the body of the request
     body_data = request.get_json()
     # create a new bookshelf model instance
     bookshelf = Bookshelf(
-        title = body_data.get("title"),
         status = body_data.get("status"),
         start_date = body_data.get("start_date"),
         end_date = body_data.get("end_date"),
@@ -48,14 +47,14 @@ def create_bookshelf():
     return bookshelf_schema.dump(bookshelf)
 
 # /bookshelf/<id> - DELETE - delete a bookshelf
-@bookshelf_bp.route("/<int:bookshelf_id", methods=["DELETE"])
-@jwt_required
+@bookshelf_bp.route("/<int:bookshelf_id>", methods=["DELETE"])
+@jwt_required()
 def delete_bookshelf(bookshelf_id):
     # fetch the bookshelf from the database
     stmt = db.select(Bookshelf).filter_by(id=bookshelf_id)
     bookshelf = db.session.scalar(stmt)
     # if bookshelf exists
-    if card:
+    if bookshelf:
         # delete the bookshelf
         db.session.delete(bookshelf)
         db.session.commit()
@@ -66,8 +65,8 @@ def delete_bookshelf(bookshelf_id):
         return {"error": f"Bookshelf with id {bookshelf_id} does not exist"}, 404
 
 # /bookshelf/<id> - PUT, PATCH - edit a bookshelf entry
-@bookshelf_bp.route("/<int:bookshelf_id", methods=["PUT", "PATCH"])
-@jwt_required
+@bookshelf_bp.route("/<int:bookshelf_id>", methods=["PUT", "PATCH"])
+@jwt_required()
 def update_bookshelf(bookshelf_id):
     # get the info from the body of the request
     body_data = request.get_json()
@@ -77,7 +76,6 @@ def update_bookshelf(bookshelf_id):
     # if the bookshelf exists
     if bookshelf:
         # update the fields as required
-        bookshelf.title = body_data.get("title") or bookshelf.title
         bookshelf.status = body_data.get("status") or bookshelf.status
         bookshelf.start_date = body_data.get("start_date") or bookshelf.start_date
         bookshelf.end_date = body_data.get("end_date") or bookshelf.end_date

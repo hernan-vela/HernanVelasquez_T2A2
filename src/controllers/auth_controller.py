@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from models.user import User, user_schema
+from models.users_profiles import User, user_schema
 from init import bcrypt, db
 from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes

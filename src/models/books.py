@@ -2,7 +2,7 @@ from init import db, ma, bcrypt, jwt
 # unpack information of entities to establish relationships 
 from marshmallow import fields
 
-class Books(db.Model):
+class Book(db.Model):
     # name of the table
     __tablename__ = "books"
 
@@ -18,33 +18,25 @@ class Books(db.Model):
     ebook_isbn = db.Column(db.Integer, nullable=False)
     print_isbn = db.Column(db.Integer, nullable=False)
 
-    # definition of 'user_id' as FK in books entity
-    user_id = db.Column(db.Integer, db.ForeignKey("user_profile.user_id"), nullable=False)
-
-    # relationship between entities user_profile --> books
-    user = db.relationship('User', back_populates='books')
-
     # relationship between entities book_comments --> books
-    book_comment = db.relationship('BookComments', back_populates='books')
+    book_comments = db.relationship('BookComment', back_populates='book')
 
-    # relationship between entities store_book --> books
-    stored_book = db.relationship('StoredBook', back_populates='books')
+    # relationship between entities store_books --> books
+    stored_books = db.relationship('StoredBook', back_populates='book')
 
     # schema for books entity
-    class BooksSchema(ma.Schema):
-        user = fields.Nested('UserSchema', only=["user_id", "name", "email"])
-        
-        class Meta:
+class BookSchema(ma.Schema):
+    user = fields.Nested('UserSchema', only=["user_id", "name", "email"])
 
-            # exclusion of 'book' attribute from respective entities
-            book_comment = fields.List(fields.Nested('BookCommentsSchema', exclude=["book"]))
-            stored_book = fields.List(fields.Nested('StoredBookSchema', exclude=["book"]))
-            
-            # 'user' or 'user_id'. AAMOD SAYS THAT FK COULD BE EXCLUDED BECAUSE WE HAVE DEFINED 'user' LINK BETWEEN TABLES. TRUE?
-            fields = ("book_id", "title", "author", "language", "translator", "publisher", "publisher_city", "publication_date", "ebook_isbn", "print_isbn", "user")
+    # exclusion of 'book' attribute from respective entities
+    book_comments = fields.List(fields.Nested('BookCommentSchema', exclude=["book"]))
+    stored_books = fields.List(fields.Nested('StoredBookSchema', exclude=["book"]))
 
-    # to handle a single books object
-    book_schema = BooksSchema()
+    class Meta:
+        fields = ("book_id", "title", "author", "language", "translator", "publisher", "publisher_city", "publication_date", "ebook_isbn", "print_isbn", "book_comments", "stored_books")
 
-    # to handle a list of books objects
-    books_schema = BooksSchema(many=True)
+# to handle a single books object
+book_schema = BookSchema()
+
+# to handle a list of books objects
+books_schema = BookSchema(many=True)
