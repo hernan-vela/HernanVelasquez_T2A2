@@ -2,8 +2,11 @@ from datetime import date
 
 from flask import Blueprint
 from init import db, bcrypt
-from models.user import User
-from models.bookshelf import Bookshelf
+from models.users_profiles import User
+from models.bookshelves import Bookshelf
+from models.book_comments import BookComment
+from models.stored_books import StoredBook
+from models.books import Book
 
 db_commands = Blueprint("db", __name__)
 
@@ -16,7 +19,7 @@ def create_tables():
 # command to populate the table
 @db_commands.cli.command("seed")
 def seed_tables():
-    user_profile = [
+    users = [
         User(
             name = "Hernan Vela",
             email = "hernan_admin@email.com",
@@ -32,18 +35,16 @@ def seed_tables():
         )
     ]
 
-    db.session.add_all(user_profile)
+    db.session.add_all(users)
 
-    bookshelf = [
+    bookshelves = [
         Bookshelf(
-            title = "1984",
             status = "reading",
             start_date = date.today(),
             review = "I haven't finished it, but it is a must-to-read book",
             user = users[0]
         ), 
         Bookshelf(
-            title = "Crime and Punishment",
             status = "reading",
             start_date = date.today(),
             review = "Intense",
@@ -51,14 +52,13 @@ def seed_tables():
         )
     ]
 
-    db.session.add_all(bookshelf)
+    db.session.add_all(bookshelves)
     
     db.session.commit()
 
     print("Tables seeded!")
 
 # command to drop the table
-
 @db_commands.cli.command("drop")
 def drop_tables():
     db.drop_all()
