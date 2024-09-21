@@ -7,17 +7,18 @@ from init import db
 from models.bookshelves import Bookshelf, bookshelf_schema, bookshelves_schema
 
 
-bookshelf_bp = Blueprint("bookshelf", __name__, url_prefix="/bookshelf")
+bookshelves_bp = Blueprint("bookshelf", __name__, url_prefix="/bookshelf")
 
+# DOES THIS OPERATION MAKE SENSE? WILL THIS GIVE ME ALL THE BOOKSHELVES OF ALL THE USERS IN THE SYSTEM?
 # /bookshelf - GET - fetch all bookshelves
-@bookshelf_bp.route("/")
+@bookshelves_bp.route("/")
 def get_all_bookshelves():
     stmt = db.select(Bookshelf)
     bookshelves = db.session.scalars(stmt)
     return bookshelves_schema.dump(bookshelves)
 
 # /bookshelf/<id> - GET - fetch a specific bookshelf
-@bookshelf_bp.route("/<int:bookshelf_id>")
+@bookshelves_bp.route("/<int:bookshelf_id>")
 def get_a_bookshelf(bookshelf_id):
     stmt = db.select(Bookshelf).filter_by(id=bookshelf_id)
     bookshelf = db.session.scalar(stmt)
@@ -27,7 +28,7 @@ def get_a_bookshelf(bookshelf_id):
         return {"error": f"Bookshelf with id {bookshelf_id} does not exist"}, 404
 
 # /bookshelf - POST - create a new bookshelf
-@bookshelf_bp.route("/", methods=["POST"])
+@bookshelves_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_bookshelf():
     # get the data from the body of the request
@@ -40,14 +41,14 @@ def create_bookshelf():
         review = body_data.get("review"),
         user_id = get_jwt_identity()
     )
-    # add and commit to book_shelves
+    # add and commit to bookshelves
     db.session.add(bookshelf)
     db.session.commit()
     # response message
     return bookshelf_schema.dump(bookshelf)
 
 # /bookshelf/<id> - DELETE - delete a bookshelf
-@bookshelf_bp.route("/<int:bookshelf_id>", methods=["DELETE"])
+@bookshelves_bp.route("/<int:bookshelf_id>", methods=["DELETE"])
 @jwt_required()
 def delete_bookshelf(bookshelf_id):
     # fetch the bookshelf from the database
@@ -65,12 +66,12 @@ def delete_bookshelf(bookshelf_id):
         return {"error": f"Bookshelf with id {bookshelf_id} does not exist"}, 404
 
 # /bookshelf/<id> - PUT, PATCH - edit a bookshelf entry
-@bookshelf_bp.route("/<int:bookshelf_id>", methods=["PUT", "PATCH"])
+@bookshelves_bp.route("/<int:bookshelf_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_bookshelf(bookshelf_id):
     # get the info from the body of the request
     body_data = request.get_json()
-    # get the bookshelf from the books_shelves
+    # get the bookshelf from the bookshelves
     stmt = db.select(Bookshelf).filter_by(id=bookshelf_id)
     bookshelf = db.session.scalar(stmt)
     # if the bookshelf exists

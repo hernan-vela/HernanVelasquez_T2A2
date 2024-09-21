@@ -31,3 +31,51 @@ Steps to create code the API:
 7. Create a model for entity ```user_profile``` and define relationship between this entity and ```bookshelf`` entity.
 
 8. Create a model for entity ```bookshelf``` and define relationship between this entity and ```bookshelf``` entity. This same process will apply for the rest of the models and their respective relationships.
+
+9. 
+
+
+
+
+
+
+
+
+
+CRUD Operations (template)
+# /book_comment - GET - fetch all book_comments
+# /book_comment/<id> - GET - fetch a specific book_comment
+# /book_comment - POST - create a new book_comment
+# /book_comment/<id> - DELETE - delete a book_comment
+# /book_comment/<id> - PUT, PATCH - edit a book_comment entry
+
+READ
+# /book_comment - GET - fetch all book_comments
+# /book_comment/<id> - GET - fetch a specific book_comment
+
+CREATE
+# /book_comment - POST - create a new book_comment
+    # get the data from the body of the request
+    # create a new book_comment model instance
+    # add and commit to book_comments
+	# return acknowledgement message
+    # ackonwledgement message
+
+DELETE
+# /book_comment/<id> - DELETE - delete a book_comment
+    # fetch the book_comment from books_shelves
+    # if book_comment exists
+        # delete the book_comment
+    # else
+        # return error message
+
+UPDATE
+# /book_comment/<id> - PUT, PATCH - edit a book_comment entry
+    # get the info from the body of the request
+    # get the book_comment from books_shelves
+    # if the book_comment exists
+        # update the field as required
+        # commit to books_shelves
+        # return acknowledgement message
+    # else
+        # return an error message
