@@ -29,5 +29,3 @@ def create_app():
     app.register_blueprint(stored_books_bp)
 
     return app
-
-x = 1
