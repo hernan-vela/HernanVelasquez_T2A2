@@ -8,8 +8,6 @@ from models.books import Book, book_schema, books_schema
 
 books_bp = Blueprint("book", __name__, url_prefix="/book")
 
-# DOES THIS OPERATION MAKE SENSE? WILL THIS GIVE ME ALL THE BOOKSHELVES OF ALL THE USERS IN THE SYSTEM?
-
 # /book - GET - fetch all books
 @books_bp.route("/")
 def get_all_books():
@@ -77,7 +75,7 @@ def delete_book(book_id):
 def update_book(book_id):
     # get the info from the body of the request
     body_data = request.get_json()
-    # get the book from books
+    # get the book from books_shelves
     stmt = db.select(Book).filter_by(id=book_id)
     book = db.session.scalar(stmt)
     # if the book exists
@@ -89,11 +87,11 @@ def update_book(book_id):
         book.translator = body_data.get("translator") or book.translator
         book.publisher = body_data.get("publisher") or book.publisher
         book.publisher_city = body_data.get("publisher_city") or book.publisher_city
-        # SOLVER THIS VARIABLE
+        # SOLVE THIS VARIABLE
         book.publication_date_str = body_data.get("publication_date") or book.publication_date
         book.ebook_isbn = body_data.get("ebook_isbn") or book.ebook_isbn
         book.print_isbn = body_data.get("print_isbn") or book.print_isbn
-        # commit to books
+        # commit to books_shelves
         db.session.commit()
         # return acknowledgement message
         return book_schema.dump(book)
