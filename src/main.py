@@ -6,6 +6,7 @@ from controllers.cli_controllers import db_commands
 from controllers.auth_controller import auth_bp
 from controllers.bookshelves_controller import bookshelves_bp
 from controllers.book_comments_controller import book_comments_bp
+from controllers.
 
 def create_app():
     app = Flask(__name__)
@@ -23,5 +24,6 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(bookshelves_bp)
     app.register_blueprint(book_comments_bp)
+    app.register_blueprint(books_bp)
 
     return app
