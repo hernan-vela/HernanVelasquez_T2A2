@@ -6,7 +6,10 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from init import db
 from models.books import Book, book_schema, books_schema
 
-books_bp = Blueprint("book", __name__, url_prefix="/book")
+from controllers.book_comments_controller import book_comments_bp
+
+books_bp = Blueprint("books", __name__, url_prefix="/books")
+books_bp.register_blueprint(book_comments_bp)
 
 # /book - GET - fetch all books
 @books_bp.route("/")

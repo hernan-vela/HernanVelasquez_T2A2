@@ -53,7 +53,51 @@ def seed_tables():
     ]
 
     db.session.add_all(bookshelves)
-    
+
+    books = [
+        Book(
+            title = "The Indispensable Calvin and Hobbes: A Calvin and Hobbes Treasury",
+            author = "Bill Watterson",
+            language = "English",
+            translator = "Ed Mont",
+            publisher = "Scholastic",
+            publisher_city = "New York",
+            publication_date = "1992",
+            ebok_isbn = "9780590471794",
+            print_isbn = "9880590471794"
+        ), 
+        Book(
+            title = "Autobiography of a Yogi",
+            author = "Paramahansa Yogananda",
+            language = "English",
+            translator = "",
+            publisher = "Crystal Clarity Publishers",
+            publisher_city = "Chicago",
+            publication_date = "1946-05-05",
+            ebok_isbn = "9380590471004",
+            print_isbn = "9781565892125"
+        )
+    ]
+
+    db.session.add_all(books)
+# IS IT RIGHT? WHAT ABOUT book_id?
+    book_comments = [
+        BookComment(
+            date = date.today(),
+            user = users[1],
+            book = books[2],
+            comment = "Incredible story. I couldn't recommend it more" 
+        ), 
+        BookComment(
+            date = date.today(),
+            user = users[1],
+            book = books[2],
+            comment = "It was a good read for my 4 hours flight."    
+        )
+    ]
+
+    db.session.add_all(book_comments)
+
     db.session.commit()
 
     print("Tables seeded!")

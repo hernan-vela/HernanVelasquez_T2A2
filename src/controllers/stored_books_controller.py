@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from init import db
 from models.stored_books import StoredBook, stored_book_schema, stored_books_schema
 
-stored_books_bp = Blueprint("stored_book", __name__, url_prefix="/stored_book")
+stored_books_bp = Blueprint("stored_book", __name__, url_prefix="/<int:bookshelf_id>/<int:book_id/stored_book")
 
 # DOES THIS OPERATION MAKE SENSE? WILL THIS GIVE ME ALL THE BOOKSHELVES OF ALL THE USERS IN THE SYSTEM?
 # /stored_book - GET - fetch all stored_book

@@ -8,6 +8,7 @@ class BookComment(db.Model):
 
     # attributes of the table
     book_comment_id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False)
     comment = db.Column(db.Text, nullable=False)
 
     # definition of 'user_id' as FK in 'book_comments' entity for 'users_profiles' entity
@@ -28,7 +29,7 @@ class BookCommentSchema(ma.Schema):
     book = fields.Nested('BookSchema', only=["book_id", "title", "author"])
 
     class Meta:
-        fields = ("book_comment_id", "comment", "user", "book")
+        fields = ("book_comment_id", "date", "comment", "user", "book")
 
 # to handle a single 'book_comments' object
 book_comment_schema = BookCommentSchema()
