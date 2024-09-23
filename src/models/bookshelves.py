@@ -1,6 +1,9 @@
 from init import db, ma, bcrypt, jwt
-# unpack information of entities to establish relationships 
+# 'fields' unpack information of entities to establish relationships 
 from marshmallow import fields
+from marshmallow.validate import Length, And, Regexp, OneOf
+
+VALID_STATUSES = ("Read", "Reading", "To-read", "Other")
 
 class Bookshelf(db.Model):
     # name of the table
@@ -28,6 +31,8 @@ class BookshelfSchema(ma.Schema):
     
     # exclusion of 'bookshelf' attribute from 'stored_book'
     stored_books = fields.List(fields.Nested('StoredBookSchema', exclude=["bookshelf"]))
+
+    status = fields.String(required=True, validate=And(Length(min=3, error="Title must be at least 3 characters in length."), Regexp("^[A-Za-z0-9 ]+$", error="Title should start with a capital letter and contain alphanumeric only."), OneOf(VALID_STATUSES)))
 
     class Meta:
         fields = ("bookshelf_id", "status", "start_date", "end_date", "review", "user", "stored_books")

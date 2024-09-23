@@ -7,23 +7,23 @@ from init import db
 from models.books import Book, book_schema, books_schema
 
 from controllers.book_comments_controller import book_comments_bp
-from utils import auth_as_admin_decorator
+
 
 books_bp = Blueprint("books", __name__, url_prefix="/books")
-books_bp.register_blueprint(book_comments_bp)
+#books_bp.register_blueprint(book_comments_bp)
 
 # IS IT RELEVANT TO MANTAIN THIS FUNCTION HERE? ONLY ADMIN CAN ADD OR DELETE BOOKS!
 # /books - GET - fetch all books
-# @books_bp.route("/")
-# def get_all_books():
-#     stmt = db.select(Book)
-#     books = db.session.scalars(stmt)
-#     return books_schema.dump(books)
+@books_bp.route("/")
+def get_all_books():
+    stmt = db.select(Book)
+    books = db.session.scalars(stmt)
+    return books_schema.dump(books)
 
 # /books/<id> - GET - fetch a specific book
 @books_bp.route("/<int:book_id>")
 def get_a_book(book_id):
-    stmt = db.select(Book).filter_by(id=book_id)
+    stmt = db.select(Book).filter_by(book_id=book_id)
     book = db.session.scalar(stmt)
     if book :
         return book_schema.dump(book)
@@ -66,9 +66,8 @@ def create_book():
     return book_schema.dump(book)
 
 # /books/<id> - DELETE - delete a book
-@books_bp.route("/<id:book_id>", methods=["DELETE"])
+@books_bp.route("/<int:book_id>", methods=["DELETE"])
 @jwt_required()
-@auth_as_admin_decorator
 def delete_book(book_id):
     # check whether is_admin=True or not
     # is_admin = authorise_as_admin()
@@ -94,10 +93,10 @@ def delete_book(book_id):
 # /books/<id> - PUT, PATCH - edit a book entry
 @books_bp.route("/<int:book_id>", methods=["PUT", "PATCH"])
 @jwt_required()
-@auth_as_admin_decorator
+#@auth_as_admin_decorator
 def update_book(book_id):
     # get value from the body of the request
-    body_data = request.get_json()
+    body_data = book_schema.load(request.get_json(), partial=True)
     # get the book from books_shelves
     stmt = db.select(Book).filter_by(id=book_id)
     book = db.session.scalar(stmt)
@@ -115,9 +114,9 @@ def update_book(book_id):
 
         # parsing 'publication_date'
         book.publication_date = body_data.get("publication_date") or book.publication_date
-        if publication_date:
+        if book.publication_date:
             try:
-                book.publication_date = datetime.strptime(publication_date, '%Y-%m-%d').date()
+                book.publication_date = datetime.strptime(book.publication_date, '%Y-%m-%d').date()
             except ValueError:
                 return {"error": "Expected format for publication_date is YYYY-MM-DD"}, 400
 

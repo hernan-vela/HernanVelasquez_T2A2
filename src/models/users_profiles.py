@@ -1,6 +1,7 @@
 from init import db, ma, bcrypt, jwt
 # unpack information of entities to establish relationship
 from marshmallow import fields
+from marshmallow.validate import Regexp
 
 class User(db.Model):
     # Name of the table
@@ -24,6 +25,8 @@ class UserSchema(ma.Schema):
     # exclusion of 'user' attribute from respective entities
     bookshelves = fields.List(fields.Nested('BookshelfSchema', exclude=["user"]))
     book_comments = fields.List(fields.Nested('BookCommentSchema', exclude=["user"]))
+
+    email = fields.String(required=True, validate=Regexp("^\S+@\S+\.\S+$", error="Invalid email Format."))
 
     class Meta:
         fields = ("user_id", "name", "email", "user_name", "password", "is_admin", "bookshelves", "book_comments")

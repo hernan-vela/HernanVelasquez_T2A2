@@ -16,7 +16,7 @@ book_comments_bp = Blueprint("book_comments", __name__, url_prefix="/<int:book_i
 @jwt_required()
 def create_book_comment(book_id):
     # get the data from the body of the request
-    body_data = request.get_json()
+    body_data = book_comment_schema.load(request.get_json())
     # fetch the book with id=book_id
     stmt = db.select(Book).filter_by(id=book_id)
     book = db.session.scalar(stmt)
@@ -69,20 +69,11 @@ def update_book_comment(book_id, book_comment_id):
     book_comment = db.session.scalar(stmt)
     # if the book_comment exists
     if book_comment:
-        # update book_comment
-        # parsing 'date'
-        book_comment.date = body_data.get("date") or book_comment.date
-        if date:
-            try:
-                book_comment.date = datetime.strptime(date, '%Y-%m-%d').date()
-            except ValueError:
-                return {"error": "Expected format for publication_date is YYYY-MM-DD"}, 400
-            
+        # update book_comment        
         book_comment.comment = body_data.get("comment") or book_comment.comment
-
         # commit to books_shelves
         db.session.commit()
-        
+
         # return acknowledgement 
         return book_comment_schema.dump(book_comment)
     # else

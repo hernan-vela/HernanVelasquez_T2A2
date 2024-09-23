@@ -32,7 +32,7 @@ def get_a_bookshelf(bookshelf_id):
 @jwt_required()
 def create_bookshelf():
     # get the data from the body of the request
-    body_data = request.get_json()
+    body_data = bookshelf_schema.load(request.get_json())
     # create a new bookshelf model instance
     bookshelf = Bookshelf(
         status = body_data.get("status"),
@@ -70,7 +70,7 @@ def delete_bookshelf(bookshelf_id):
 @jwt_required()
 def update_bookshelf(bookshelf_id):
     # get the info from the body of the request
-    body_data = request.get_json()
+    body_data = bookshelf_schema.load(request.get_json())
     # get the bookshelf from the bookshelves
     stmt = db.select(Bookshelf).filter_by(id=bookshelf_id)
     bookshelf = db.session.scalar(stmt)

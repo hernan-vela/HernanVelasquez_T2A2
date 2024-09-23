@@ -1,10 +1,14 @@
 from flask import Blueprint, request
-from models.users_profiles import User, user_schema
+
+from models.bookshelves import Bookshelf
+from models.users_profiles import User, user_schema, UserSchema
 from init import bcrypt, db
+
 from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes
-from flask_jwt_extended import create_access_token
-from datetime import timedelta
+from flask_jwt_extended import create_access_token, jwt_required,get_jwt_identity
+
+from datetime import date, timedelta
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -13,12 +17,29 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 def register_user():
     try:
         # get the data from the body of the request
-        body_data = request.get_json()
+        body_data = UserSchema().load(request.get_json())
         # create an instance of the User Model
         user = User(
             name = body_data.get("name"),
             email = body_data.get("email"),
-            user_name = body_data.get("user_name")
+            user_name = body_data.get("user_name"),
+            bookshelves = [
+                Bookshelf(
+                    status = "Read",
+                    start_date = date.today(),
+                    review = "I haven't finished it, but it is a must-to-read book",
+                ), 
+                Bookshelf(
+                    status = "Reading",
+                    start_date = date.today(),
+                    review = "Intense"
+                ),
+                Bookshelf(
+                    status = "To-read",
+                    start_date = date.today(),
+                    review = "Intense",
+                )
+            ]
         )
         # hash the password
         password = body_data.get("password")
@@ -54,4 +75,24 @@ def login_user():
         # respond back with an error message
         return {"error": "Email or password incorrect"}, 400
 
-
+# /auth/users/user_id
+@auth_bp.route("/users/<int:user_id>", methods=["PUT", "PATCH"])
+@jwt_required()
+def update_user():
+    # get field from the body of the request
+    body_data = UserSchema().load(request.get_json())
+    password = body_data.get("password")
+    # fetch the user from 'books_shelves'
+    stmt = db.select(User).filter_by(id=get_jwt_identity())
+    user = db.session.scalar(stmt)
+    # if exists:
+    if user:
+        # update fields as required
+        user.name = body_data.get("name") or user.name
+        if password:
+            user.password = bcrypt.generate_password_hash(password).decode("utf-8")
+        
+        # commit changes to 'books_shelves'
+        # return meaningful message
+    # else:
+        # return an error message

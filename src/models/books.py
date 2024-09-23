@@ -1,6 +1,7 @@
 from init import db, ma, bcrypt, jwt
 # unpack information of entities to establish relationships 
 from marshmallow import fields
+from marshmallow.validate import Length, And, Regexp
 
 class Book(db.Model):
     # name of the table
@@ -15,8 +16,8 @@ class Book(db.Model):
     publisher = db.Column(db.String, nullable=False)
     publisher_city = db.Column(db.String)
     publication_date = db.Column(db.Date)
-    ebook_isbn = db.Column(db.Integer, nullable=False)
-    print_isbn = db.Column(db.Integer, nullable=False)
+    ebook_isbn = db.Column(db.String, nullable=False)
+    print_isbn = db.Column(db.String, nullable=False)
 
     # relationship between entities book_comments --> books
     book_comments = db.relationship('BookComment', back_populates='book')
@@ -28,15 +29,19 @@ class Book(db.Model):
 class BookSchema(ma.Schema):
     user = fields.Nested('UserSchema', only=["user_id", "name", "email"])
 
+
+    # REVIEW
     # exclusion of 'book' attribute from respective entities
     book_comments = fields.List(fields.Nested('BookCommentSchema', exclude=["book"]))
-    stored_books = fields.List(fields.Nested('StoredBookSchema', exclude=["book"]))
+    # stored_books = fields.List(fields.Nested('StoredBookSchema', exclude=["book"]))
+
+    title = fields.String(required=True, validate=And(Length(min=3, error="Title must be at least 3 characters in length."), Regexp("^[A-Za-z0-9 ]+$", error="Title should start with a capital letter and contain alphanumeric only.")))
 
     class Meta:
-        fields = ("book_id", "title", "author", "language", "translator", "publisher", "publisher_city", "publication_date", "ebook_isbn", "print_isbn", "book_comments", "stored_books")
+        fields = ("book_id", "title", "author", "language", "translator", "publisher", "publisher_city", "publication_date", "ebook_isbn", "print_isbn","book_comments")
 
 # to handle a single books object
 book_schema = BookSchema()
 
 # to handle a list of books objects
-books_schema = BookSchema(many=True)
+books_schema = BookSchema(many=True, exclude=["book_comments"])

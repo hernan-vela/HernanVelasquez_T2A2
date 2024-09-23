@@ -62,8 +62,8 @@ def seed_tables():
             translator = "Ed Mont",
             publisher = "Scholastic",
             publisher_city = "New York",
-            publication_date = "1992",
-            ebok_isbn = "9780590471794",
+            publication_date = "1992-03-03",
+            ebook_isbn = "9780590471794",
             print_isbn = "9880590471794"
         ), 
         Book(
@@ -74,7 +74,7 @@ def seed_tables():
             publisher = "Crystal Clarity Publishers",
             publisher_city = "Chicago",
             publication_date = "1946-05-05",
-            ebok_isbn = "9380590471004",
+            ebook_isbn = "9380590471004",
             print_isbn = "9781565892125"
         )
     ]
@@ -85,13 +85,13 @@ def seed_tables():
         BookComment(
             date = date.today(),
             user = users[1],
-            book = books[2],
+            book = books[0],
             comment = "Incredible story. I couldn't recommend it more" 
         ), 
         BookComment(
             date = date.today(),
-            user = users[1],
-            book = books[2],
+            user = users[0],
+            book = books[0],
             comment = "It was a good read for my 4 hours flight."    
         )
     ]
