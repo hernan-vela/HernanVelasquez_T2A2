@@ -9,25 +9,30 @@ from models.bookshelves import Bookshelf, bookshelf_schema, bookshelves_schema
 
 bookshelves_bp = Blueprint("bookshelf", __name__, url_prefix="/bookshelf")
 
-# DOES THIS OPERATION MAKE SENSE? WILL THIS GIVE ME ALL THE BOOKSHELVES OF ALL THE USERS IN THE SYSTEM?
-# /bookshelf - GET - fetch all bookshelves
-@bookshelves_bp.route("/")
-def get_all_bookshelves():
-    stmt = db.select(Bookshelf)
-    bookshelves = db.session.scalars(stmt)
-    return bookshelves_schema.dump(bookshelves)
+# /bookshelf - GET - fetch all bookshelves of a user
+# @bookshelves_bp.route("/")
+# def get_all_bookshelves():
+#     stmt = db.select(Bookshelf)
+#     bookshelves = db.session.scalars(stmt)
+#     return bookshelves_schema.dump(bookshelves)
 
-# /bookshelf/<id> - GET - fetch a specific bookshelf
-@bookshelves_bp.route("/<int:bookshelf_id>")
+# GET A BOOKSHELF FROM AN SPECIFIC USER  
+# /<int:user_id>/bookshelf/<int:bookshelf_id>
+#      /bookshelf/<id> - GET - fetch a specific bookshelf
+@bookshelves_bp.route("/")
+@jwt_required()
 def get_a_bookshelf(bookshelf_id):
-    stmt = db.select(Bookshelf).filter_by(id=bookshelf_id)
+    user_id = get_jwt_identity()
+    stmt = db.select(Bookshelf).filter_by(user_id=user_id)
     bookshelf = db.session.scalar(stmt)
     if bookshelf:
         return bookshelf_schema.dump(bookshelf)
     else:
         return {"error": f"Bookshelf with id {bookshelf_id} does not exist"}, 404
 
-# /bookshelf - POST - create a new bookshelf
+# adding a book to a bookshelf
+#/<int:user_id>/bookshelf/<int:bookshelf_id>/<int:book_id>
+#               /bookshelf - POST - create a new book in bookshelf
 @bookshelves_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_bookshelf():
@@ -76,6 +81,11 @@ def update_bookshelf(bookshelf_id):
     bookshelf = db.session.scalar(stmt)
     # if the bookshelf exists
     if bookshelf:
+        # if the user is not the bookshelf owner
+        if str(bookshelf.user_id) != get_jwt_identity():
+            # return error message
+            return {"error": "Only the owner of the bookshelf is allowed to perform this operation"}
+
         # update the fields as required
         bookshelf.status = body_data.get("status") or bookshelf.status
         bookshelf.start_date = body_data.get("start_date") or bookshelf.start_date

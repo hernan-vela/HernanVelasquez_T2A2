@@ -4,21 +4,21 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from init import db
-from models.books import Book, book_schema, books_schema
+from models.books import Book, book_schema, books_schema, books_library_schema
 
 from controllers.book_comments_controller import book_comments_bp
 
+# from utils import authorise_as_admin
 
 books_bp = Blueprint("books", __name__, url_prefix="/books")
 #books_bp.register_blueprint(book_comments_bp)
 
-# IS IT RELEVANT TO MANTAIN THIS FUNCTION HERE? ONLY ADMIN CAN ADD OR DELETE BOOKS!
 # /books - GET - fetch all books
 @books_bp.route("/")
 def get_all_books():
     stmt = db.select(Book)
     books = db.session.scalars(stmt)
-    return books_schema.dump(books)
+    return books_library_schema.dump(books)
 
 # /books/<id> - GET - fetch a specific book
 @books_bp.route("/<int:book_id>")
@@ -69,15 +69,15 @@ def create_book():
 @books_bp.route("/<int:book_id>", methods=["DELETE"])
 @jwt_required()
 def delete_book(book_id):
-    # check whether is_admin=True or not
+    # check whether is_admin=True
     # is_admin = authorise_as_admin()
     # if not admin
-    # if not is_admin:
+    if not is_admin:
         # return error message
-        # return {"error": "User is not authorised to perform this action."}
+        return {"error": "User has to be admin to perform this operation."}
 
     # fetch the book from books_shelves
-    stmt = db.select(Book).filter_by(id=book_id)
+    stmt = db.select(Book).filter_by(book_id=book_id)
     book = db.session.scalar(stmt)
     # if book exists
     if book:
@@ -93,12 +93,12 @@ def delete_book(book_id):
 # /books/<id> - PUT, PATCH - edit a book entry
 @books_bp.route("/<int:book_id>", methods=["PUT", "PATCH"])
 @jwt_required()
-#@auth_as_admin_decorator
+#@authorise_as_admin decorator
 def update_book(book_id):
     # get value from the body of the request
     body_data = book_schema.load(request.get_json(), partial=True)
     # get the book from books_shelves
-    stmt = db.select(Book).filter_by(id=book_id)
+    stmt = db.select(Book).filter_by(book_id=book_id)
     book = db.session.scalar(stmt)
     # check whether the user is admin or not
     # is_admin = authorise_as_admin()

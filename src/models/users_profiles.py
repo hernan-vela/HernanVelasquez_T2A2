@@ -15,10 +15,9 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-# relationship between entities 'bookshelf' --> 'users_profiles'
+    # relationship between entities 'bookshelf' --> 'users_profiles'
     bookshelves = db.relationship('Bookshelf', back_populates='user')
-
-# relationship between entities 'book_comments' --> 'users_profiles'
+    # relationship between entities 'book_comments' --> 'users_profiles'
     book_comments = db.relationship('BookComment', back_populates='user')
 
 class UserSchema(ma.Schema):
@@ -26,6 +25,7 @@ class UserSchema(ma.Schema):
     bookshelves = fields.List(fields.Nested('BookshelfSchema', exclude=["user"]))
     book_comments = fields.List(fields.Nested('BookCommentSchema', exclude=["user"]))
 
+    # validation of email according to format
     email = fields.String(required=True, validate=Regexp("^\S+@\S+\.\S+$", error="Invalid email Format."))
 
     class Meta:

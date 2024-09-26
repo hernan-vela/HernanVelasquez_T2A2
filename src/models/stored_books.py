@@ -22,8 +22,8 @@ class StoredBook(db.Model):
     bookshelf = db.relationship('Bookshelf', back_populates='stored_books')
 
 class StoredBookSchema(ma.Schema):
-    book = fields.Nested('BookSchema', only=["book_id", "title", "author"])
-    bookshelf = fields.Nested('BookshelfSchema', only=["bookshelf_id", "user_id", "status"])
+    book = fields.Nested('BookSchema', only=["title", "author"])
+    bookshelf = fields.Nested('BookshelfSchema', only=["bookshelf_id", "user", "status"])
 
     class Meta:
         fields = ("stored_book_id", "book", "bookshelf")

@@ -31,7 +31,8 @@ def seed_tables():
             name = "Vittoria Vetra",
             email = "vittoria.vetra@email.com",
             user_name = "vittoria.vetra",
-            password = bcrypt.generate_password_hash("vv3436336").decode("utf-8")
+            password = bcrypt.generate_password_hash("vv3436336").decode("utf-8"),
+            is_admin = False
         )
     ]
 
@@ -39,6 +40,8 @@ def seed_tables():
 
     bookshelves = [
         Bookshelf(
+            # HOW CAN I RETRIEVE book_id OR title?
+            # book_id = "book_id" 
             status = "reading",
             start_date = date.today(),
             review = "I haven't finished it, but it is a must-to-read book",
@@ -80,7 +83,7 @@ def seed_tables():
     ]
 
     db.session.add_all(books)
-# IS IT RIGHT? WHAT ABOUT book_id?
+
     book_comments = [
         BookComment(
             date = date.today(),

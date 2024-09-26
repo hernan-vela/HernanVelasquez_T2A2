@@ -3,10 +3,11 @@ from flask import Blueprint, request
 from models.bookshelves import Bookshelf
 from models.users_profiles import User, user_schema, UserSchema
 from init import bcrypt, db
+from utils import auth_as_admin_decorator
 
 from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes
-from flask_jwt_extended import create_access_token, jwt_required,get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 from datetime import date, timedelta
 
@@ -27,17 +28,17 @@ def register_user():
                 Bookshelf(
                     status = "Read",
                     start_date = date.today(),
-                    review = "I haven't finished it, but it is a must-to-read book",
+                    review = "",
                 ), 
                 Bookshelf(
                     status = "Reading",
                     start_date = date.today(),
-                    review = "Intense"
+                    review = ""
                 ),
                 Bookshelf(
                     status = "To-read",
                     start_date = date.today(),
-                    review = "Intense",
+                    review = "",
                 )
             ]
         )
@@ -76,11 +77,11 @@ def login_user():
         return {"error": "Email or password incorrect"}, 400
 
 # /auth/users/user_id
-@auth_bp.route("/users/<int:user_id>", methods=["PUT", "PATCH"])
+@auth_bp.route("/users_profiles/<int:user_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_user():
     # get field from the body of the request
-    body_data = UserSchema().load(request.get_json())
+    body_data = UserSchema().load(request.get_json(), partial=True)
     password = body_data.get("password")
     # fetch the user from 'books_shelves'
     stmt = db.select(User).filter_by(id=get_jwt_identity())
@@ -89,10 +90,35 @@ def update_user():
     if user:
         # update fields as required
         user.name = body_data.get("name") or user.name
+        user.user_name = body_data.get("user_name") or user.user_name
         if password:
             user.password = bcrypt.generate_password_hash(password).decode("utf-8")
-        
         # commit changes to 'books_shelves'
+        db.session.commit()
         # return meaningful message
+        return user_schema.dump(user)
     # else:
+    else:
         # return an error message
+        return {"error": "User does not exist."}
+
+# /auth/users/user_id
+@auth_bp.route("/users_profiles/<int:user_id>", methods=["DELETE"])
+@jwt_required()
+@auth_as_admin_decorator
+def delete_user(user_id):
+    # find the user with the id from the db
+    # SELECT * FROM users_profiles WHERE id==user_id;
+    stmt = db.select(User).filter_by(user_id=user_id)
+    user = db.session.scalar(stmt)
+    # if exists:
+    if user:
+        # delete the user
+        db.session.delete(user)
+        db.session.commit()
+        # return an acknowledgement message
+        return {"message": f"User with id {user_id} is deleted."}
+    # else:
+    else:
+        # return error message
+        return {"message": f"User with id {user_id} not found."}, 404

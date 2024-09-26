@@ -12,7 +12,7 @@ def auth_as_admin_decorator(fn):
         # get user_id from get_jwt_identity
         user_id = get_jwt_identity()
         # fetch the user from the db books_shelves
-        stmt = db.select(User).filter_by(id=user_id)
+        stmt = db.select(User).filter_by(user_id=user_id)
         user = db.session.scalar(stmt)
         # if user is_admin=True
         if user.is_admin:
