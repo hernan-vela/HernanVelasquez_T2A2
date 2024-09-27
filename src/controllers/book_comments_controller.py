@@ -4,7 +4,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from init import db
-from models.book_comments import BookComment, book_comment_schema, book_comments_schema
+from models.book_comments import BookComment, book_comment_schema, book_comments_schema 
 from models.books import Book
 
 # creation of book_comments blueprint
@@ -18,33 +18,32 @@ def create_book_comment(book_id):
     # get the data from the body of the request
     body_data = book_comment_schema.load(request.get_json())
     # fetch the book with id=book_id
-    stmt = db.select(Book).filter_by(id=book_id)
+    stmt = db.select(Book).filter_by(book_id=book_id)
     book = db.session.scalar(stmt)
     # if book exists:
     if book:
         # create a new book_comment model instance
         book_comment = BookComment(
+        user_id = get_jwt_identity(),
         date = date.today(),
         book = book,
-        comment = body_data.get("comment"),  
-        user_id = get_jwt_identity()  
+        comment = body_data.get("comment") 
         )
         # add and commit to book_comments
         db.session.add(book_comment)
         db.session.commit()
         # response message
         return book_comment_schema.dump(book_comment), 201
-    # else 
     else:
         # return error
         return {"error": f"Book with id {book_id} not found"}, 404
 
-# /books/<int:book_id>/book_comments/<int:book_comment_id - DELETE - delete a book_comment
+# DELETE - delete a book_comment
 @book_comments_bp.route("/<int:book_comment_id>", methods=["DELETE"])
 @jwt_required()
-def delete_book_comment(books_id, book_comment_id):
+def delete_book_comment(book_id, book_comment_id):
     # fetch the book_comment from books_shelves with id=comment_id
-    stmt = db.select(BookComment).filter_by(book_comment_id)
+    stmt = db.select(BookComment).filter_by(book_comment_id=book_comment_id, book_id=book_id)
     book_comment = db.session.scalar(stmt)
     # if book_comment exists
     if book_comment:
@@ -52,7 +51,7 @@ def delete_book_comment(books_id, book_comment_id):
         db.session.delete(book_comment)
         db.session.commit()
         # return acknowledgement message
-        return {"message": f"Book_comment {book_comment.comment} deleted successfully!"}
+        return {"message": f"Book_comment {book_comment_id} deleted successfully!"}
     # else
     else:
         # return error message
@@ -65,7 +64,7 @@ def update_book_comment(book_id, book_comment_id):
     # get the info from the body of the request
     body_data = request.get_json()
     # get the book_comment from books_shelves
-    stmt = db.select(BookComment).filter_by(id=book_comment_id)
+    stmt = db.select(BookComment).filter_by(book_comment_id=book_comment_id)
     book_comment = db.session.scalar(stmt)
     # if the book_comment exists
     if book_comment:

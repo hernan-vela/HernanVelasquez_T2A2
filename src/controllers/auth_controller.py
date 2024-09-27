@@ -26,19 +26,13 @@ def register_user():
             user_name = body_data.get("user_name"),
             bookshelves = [
                 Bookshelf(
-                    status = "Read",
-                    start_date = date.today(),
-                    review = "",
+                    status = "Read"
                 ), 
                 Bookshelf(
-                    status = "Reading",
-                    start_date = date.today(),
-                    review = ""
+                    status = "Reading"
                 ),
                 Bookshelf(
-                    status = "To-read",
-                    start_date = date.today(),
-                    review = "",
+                    status = "To-read"
                 )
             ]
         )
@@ -57,7 +51,7 @@ def register_user():
         if err.orig.pgcode == errorcodes.UNIQUE_VIOLATION:
             return {"error": "Email address is required"}, 400
 
-
+# user login operation
 @auth_bp.route("/login", methods=["POST"])
 def login_user():
     # get the data from the body of the request
@@ -79,6 +73,7 @@ def login_user():
 # /auth/users/user_id
 @auth_bp.route("/users_profiles/<int:user_id>", methods=["PUT", "PATCH"])
 @jwt_required()
+@auth_as_admin_decorator
 def update_user():
     # get field from the body of the request
     body_data = UserSchema().load(request.get_json(), partial=True)

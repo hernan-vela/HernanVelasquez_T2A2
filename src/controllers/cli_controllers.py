@@ -40,18 +40,28 @@ def seed_tables():
 
     bookshelves = [
         Bookshelf(
-            # HOW CAN I RETRIEVE book_id OR title?
-            # book_id = "book_id" 
-            status = "reading",
-            start_date = date.today(),
-            review = "I haven't finished it, but it is a must-to-read book",
+            status = "read",
             user = users[0]
         ), 
         Bookshelf(
             status = "reading",
-            start_date = date.today(),
-            review = "Intense",
             user = users[0]            
+        ),
+        Bookshelf(
+            status = "to-read",
+            user = users[0]
+        ), 
+        Bookshelf(
+            status = "read",
+            user = users[1]            
+        ),
+        Bookshelf(
+            status = "reading",
+            user = users[1]
+        ), 
+        Bookshelf(
+            status = "to-read",
+            user = users[1]            
         )
     ]
 
@@ -79,6 +89,17 @@ def seed_tables():
             publication_date = "1946-05-05",
             ebook_isbn = "9380590471004",
             print_isbn = "9781565892125"
+        ),
+        Book(
+            title = "Flatland",
+            author = "Scott Atkins",
+            language = "English",
+            translator = "",
+            publisher = "Geometry",
+            publisher_city = "Chicago",
+            publication_date = "1955-01-01",
+            ebook_isbn = "2280590471004",
+            print_isbn = "2281565892125"
         )
     ]
 

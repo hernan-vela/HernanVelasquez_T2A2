@@ -4,14 +4,14 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from init import db
-from models.books import Book, book_schema, books_schema, books_library_schema
+from models.books import Book, book_schema, books_library_schema 
 
 from controllers.book_comments_controller import book_comments_bp
 
-# from utils import authorise_as_admin
+from utils import auth_as_admin_decorator
 
 books_bp = Blueprint("books", __name__, url_prefix="/books")
-#books_bp.register_blueprint(book_comments_bp)
+books_bp.register_blueprint(book_comments_bp)
 
 # /books - GET - fetch all books
 @books_bp.route("/")
@@ -31,9 +31,9 @@ def get_a_book(book_id):
         return {"error": f"Book with id {book_id} does not exist"}, 404
     
 # /books - POST - create a new book
-# PENDING TO HANDLE AUTHORISATION HERE FOR is_admin
 @books_bp.route("/", methods=["POST"])
 @jwt_required()
+@auth_as_admin_decorator
 def create_book():
     # get the data from the body of the request
     body_data = book_schema.load(request.get_json())
@@ -68,14 +68,8 @@ def create_book():
 # /books/<id> - DELETE - delete a book
 @books_bp.route("/<int:book_id>", methods=["DELETE"])
 @jwt_required()
+@auth_as_admin_decorator
 def delete_book(book_id):
-    # check whether is_admin=True
-    # is_admin = authorise_as_admin()
-    # if not admin
-    if not is_admin:
-        # return error message
-        return {"error": "User has to be admin to perform this operation."}
-
     # fetch the book from books_shelves
     stmt = db.select(Book).filter_by(book_id=book_id)
     book = db.session.scalar(stmt)
@@ -93,16 +87,13 @@ def delete_book(book_id):
 # /books/<id> - PUT, PATCH - edit a book entry
 @books_bp.route("/<int:book_id>", methods=["PUT", "PATCH"])
 @jwt_required()
-#@authorise_as_admin decorator
+@auth_as_admin_decorator
 def update_book(book_id):
     # get value from the body of the request
     body_data = book_schema.load(request.get_json(), partial=True)
     # get the book from books_shelves
     stmt = db.select(Book).filter_by(book_id=book_id)
     book = db.session.scalar(stmt)
-    # check whether the user is admin or not
-    # is_admin = authorise_as_admin()
-    # if the book exists
     if book:
         # update the field as required
         book.title = body_data.get("title") or book.title,

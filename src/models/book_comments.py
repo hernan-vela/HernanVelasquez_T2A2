@@ -27,7 +27,7 @@ class BookComment(db.Model):
 class BookCommentSchema(ma.Schema):
     # IS THIS CORRECT? WILL IT FETCH A LIST OF COMMENTS OF ONE USER?
     user = fields.Nested('UserSchema', only=["user_id", "user_name"])
-    book = fields.List(fields.Nested('BookSchema', only=["book_id", "title", "author"]))
+    book = fields.Nested('BookSchema', only=["book_id", "title", "author"])
 
     class Meta:
         fields = ("user", "book", "book_comment_id", "date", "comment")
@@ -37,19 +37,3 @@ book_comment_schema = BookCommentSchema()
 
 # to handle a list of 'book_comments' objects
 book_comments_schema = BookCommentSchema(many=True)
-
-
-# schema to get all comments of a user
-class BookCommentsUserSchema(ma.Schema):
-    user = fields.Nested('UserSchema', only=["user_id", "user_name"])
-    book = fields.List(fields.Nested('BookSchema', only=["book_id", "title", "author"]))
-
-    class Meta:
-        fields = ("user", "book", "book_comment_id", "date", "comment")
-
-# to handle a single 'book_comments' object
-book_comment_schema = BookCommentsUserSchema()
-
-# to handle a list of 'book_comments' objects
-book_comments_schema = BookCommentsUserSchema(many=True)
-

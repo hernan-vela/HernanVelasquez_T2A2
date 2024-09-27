@@ -15,6 +15,9 @@ class StoredBook(db.Model):
     # definition of 'bookshelf_id' as FK in 'stored_book' entity for 'bookshelf' entity
     bookshelf_id = db.Column(db.Integer, db.ForeignKey("bookshelves.bookshelf_id"), nullable=False)
 
+    start_date = db.Column(db.Date)
+    end_date = db.Column(db.Date)
+
     # relationship between entities 'book' --> 'stored_books'
     book = db.relationship('Book', back_populates='stored_books')
 
@@ -22,8 +25,8 @@ class StoredBook(db.Model):
     bookshelf = db.relationship('Bookshelf', back_populates='stored_books')
 
 class StoredBookSchema(ma.Schema):
-    book = fields.Nested('BookSchema', only=["title", "author"])
-    bookshelf = fields.Nested('BookshelfSchema', only=["bookshelf_id", "user", "status"])
+    book = fields.Nested('BookSchema', only=["book_id", "title", "author"])
+    bookshelf = fields.Nested('BookshelfUserSchema', only=["bookshelf_id", "user", "status"])
 
     class Meta:
         fields = ("stored_book_id", "book", "bookshelf")

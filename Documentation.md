@@ -5,7 +5,7 @@
 
 ### Operation of API endpoints
 
-#### Users operations
+#### Operation on 'users_profiles' entity
 
 **Operation:** Register User
 **HTTP verb:** POST
@@ -48,26 +48,183 @@ In case of missing the email from the user it returns an error such as "Email ad
 ```
 Function registered in the ```auth_controller.py```. Once the user is properly registered in the databasae, the 'email' and 'password' of the user are taken from the front end, and the function filters the entry by using the email. Then if the user exists, the password is checked using the bycrpt method and generates a response with 'email', 'is_admin' and an authentication token. If any of the previous authentication steps are not valid, the function returns a response with "Email or password incorrect".
 
+#### Operation on 'books' entity
 
-
-**Operation:**
-**HTTP verb:**
-**Path:**  http://localhost:8080/
-**Body:**
-
-```JSON
+**Operation:** Fetch the whole library
+**HTTP verb:** GET
+**Path:**  http://localhost:8080/books
+**Body:** None
+**Response:** 
+```
+[
 {
-   
+
+    "book_id": "<int1>",
+    "title": "Story book",
+    "author": "Famous writer 1"
+},
+{
+    "book_id": "<int2>",
+    "title": "Story book",
+    "author": "Famous writer 2" 
+
+},
+{
+    "book_id": "<int3>",
+    "title": "Story book",
+    "author": "Famous writer 2" 
+
+},
+{
+    "book_id": "<int4>",
+    "title": "Story book",
+    "author": "Famous writer 3" 
+
+}
+]
+```
+
+Function registered in ```books_controller.py```. 
+
+
+**Operation:** Fetch a specific book
+**HTTP verb:** GET
+**Path:**  http://localhost:8080/books/<int:book_id33>
+**Body:** None
+**Auth:** user Token
+**Response:** 
+```
+{
+    "book_id": "<int:book_id33>,
+    "title": "The Reader",
+    "author": "Rainer Maria Rilke",
+    "language": "German",
+    "translator": "Erne Raim",
+    "publisher": "Scholastic",
+    "publisher_city": "Caana",
+    "publication_date": "1980",
+    "ebook_isbn": "0989765678987",
+    "print_isbn": "6667876545679"
 }
 ```
+
+Function registered in ```books_controller.py```. 
+
+
+**Operation:** Create a book
+**HTTP verb:** POST
+**Path:**  http://localhost:8080/books/
+**Body:**
+
+```
+{
+    "title": "R",
+    "author": "Runt Runta",
+    "language": "English",
+    "translator": "",
+    "publisher": "Echo Books",
+    "publisher_city": "New York",
+    "publication_date": "1999",
+    "ebook_isbn": "0989755678987",
+    "print_isbn": "2667876545679"
+}
+```
+**Auth:** admin Token
 **Response:** 
+```
+{
+    "Book with id {book_id} has been added"
+}
+```
+
+
+Function registered in ```books_controller.py```. 
+
+
+
+**Operation:** Delete a book
+**HTTP verb:** DELETE
+**Path:**  http://localhost:8080/books/<int:book_id>
+**Body:** None
+**Auth:** admin Token
+**Response:** 
+```
+{
+    "Book with id {book_id} has been deleted."
+}
+```
+
+Function registered in ```books_controller.py```. 
+
+
+**Operation:** Append a book
+**HTTP verb:** PUT, PATCH
+**Path:**  http://localhost:8080/books/<int:book_id>
+**Body:**
+```
+{
+    "publication_date": "2001",
+}
+```
+
+**Auth:** admin Token
+**Response:** 
+
+```
+{
+    "title": "The Endless Story",
+    "author": "Brito Gallag",
+    "language": "English",
+    "translator": "",
+    "publisher": "Echo Books",
+    "publisher_city": "Toscana",
+    "publication_date": "2001",
+    "ebook_isbn": "3489755678987",
+    "print_isbn": "5667876545679"
+}
+```
+
+Function registered in ```books_controller.py```. 
+
+
+Original entry:
+
+```
+{
+    "title": "The Endless Story",
+    "author": "Brito Gallag",
+    "language": "English",
+    "translator": "",
+    "publisher": "Echo Books",
+    "publisher_city": "Toscana",
+    "publication_date": "1967",
+    "ebook_isbn": "3489755678987",
+    "print_isbn": "5667876545679"
+}
+```
+
+Updated entry:
+
+```
+{
+    "title": "The Endless Story",
+    "author": "Brito Gallag",
+    "language": "English",
+    "translator": "",
+    "publisher": "Echo Books",
+    "publisher_city": "Toscana",
+    "publication_date": "2001",
+    "ebook_isbn": "3489755678987",
+    "print_isbn": "5667876545679"
+}
+```
 
 
 #### Operations on 'bookshelves' entity
 
 **Operation:** Fetch all the bookshelves of a user
 **HTTP verb:** GET
-**Path:** http://localhost:8080/users_profiles/<int:user_id>/bookshelf
+**Path:** http://localhost:8080/bookshelf
 **Body:** None
 **Response:** 
 ```
@@ -77,9 +234,7 @@ Function registered in the ```auth_controller.py```. Once the user is properly r
 	"bookshelves": [
         {
             "bookshelf_id": "<int2>",
-            "title": "Name_of_the_book",
-            "author": "author_of_book,
-            "status": "Reading",
+            "status": "Read",
             "start_date": "2021-10-11",
             "end_date": "",
             "review": "Opinion bout book"
@@ -107,46 +262,42 @@ Function registered in the ```auth_controller.py```. Once the user is properly r
 ```
 Function registered in the ```bookshelves_controller.py```, this function validates the user with the ```jwt_required```, and it returns a list with the user name, ```user_id``` and all the bookshelves created by the user.
 
-**Operation:** Fetch all the bookshelves of a user with the same status.
+**Operation:** Fetch all books on the same bookshelf
 **HTTP verb:** GET
-**Path:** http://localhost:8080/users_profiles/<int:user_id>/bookshelves/<status>
+**Path:** http://localhost:8080/users_profiles/<int:user_id>/bookshelves/<status>/books
 **Body:** None
 **Response:** 
 ```
 {
 	"user_id": "<int1>",
-	"user_name": "John Doe",
-	"bookshelves": [
+	"bookshelf_id": "<int1>, # Reading
+    "books": [
         {
-            "bookshelf_id": "<int2>",
-            "title": "Name_of_the_book",
-            "author": "author_of_book,
-            "status": "Reading",
-            "start_date": "2024-10-02",
+            "book_id": "3",
+            "title": "Flatland",
+            "author": "Scoot Atkins",
+            "start_date": "2024-07-01"
             "end_date": "",
-            "review": "Opinion bout book"
+            "review": ""
         },
         {
-            "bookshelf_id": "<int3>",
-            "title": "Name_of_the_book",
-            "author": "author_of_book,
-            "status": "Reading",
-            "start_date": "2024-01-03",
+            "book_id": "4"
+            "title": "The adventures of Tom Sawyer"
+            "author": "Mark Twain",
+            "start_date": "2024-07-12"
             "end_date": "",
-            "review": "Opinion about book"
-        },
-        {
-            "bookshelf_id": "<int4>",
-            "title": "Name_of_the_book",
-            "author": "author_of_book,
-            "status": "Reading",
-            "start_date": "2024-10-04",
-            "end_date": "",
-            "review": "Opinion about book"
+            "review": ""
         }
     ]
 }
-```
+```    
+
+
+
+
+
+
+         
 
 
 Function registered in the ```bookshelves_controller.py```.....from status "Reading"
@@ -155,20 +306,10 @@ Function registered in the ```bookshelves_controller.py```.....from status "Read
 
 
 
-**Operation:** Add a bookshelf
+**Operation:** Add a book to a bookshelf
 **HTTP verb:** POST
-**Path:** http://localhost:8080/users_profiles/bookshelf
-**Body:**
-```JSON
-{
-    "title": "Flatland: A Romance in Many Dimensions",
-    "author": "Edwin Abbott",
-    "status": "Read",
-    "start_date": "2021-02-03",
-    "end_date": "2021-02-04",
-    "review": "I never thought about laughing at reading mathematics."
-}
-```
+**Path:** http://localhost:8080/bookshelf/<int:bookshelf_id>/book/<int:book_id>
+**Body:** None
 **Auth:** user Token
 **Response:** 
 ```
@@ -182,7 +323,7 @@ Function registered in the ```bookshelves_controller.py```
 
 **Operation:** Delete a bookshelf
 **HTTP verb:**  DELETE
-**Path:** http://localhost:8080/users_profiles/<int:user_id>/bookshelf/<int:bookshelf_id>
+**Path:** http://localhost:8080/bookshelf/<int:bookshelf_id>
 **Body:** None
 **Auth:** user Token
 **Response:** 
@@ -195,11 +336,12 @@ Function registered in the ```bookshelves_controller.py```
 
 **Operation:** Update an existent bookshelf of a user
 **HTTP verb:** PUT, PATCH
-**Path:** http://localhost:8080/users_profiles/<int:user_id>/bookshelf/<int:bookshelf_id>
+**Path:** http://localhost:8080/bookshelf/<int:bookshelf_id>
 **Body:** Only bookshelves with "Reading" and "To-read" statuses can be changed.
 ```JSON
 {
-   "status":
+   "status": "Read",
+   "end_date": "2021-03-25"
 }
 ```
 **Auth:** user Token

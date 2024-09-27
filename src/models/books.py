@@ -46,26 +46,6 @@ books_library_schema = BookLibrarySchema(many=True)
 
 
 
-# class BookSchema(ma.Schema):
-#     user = fields.Nested('UserSchema', only=["user_id", "name", "email"])
-
-#     # exclusion of 'book' attribute from respective entities
-#     book_comments = fields.List(fields.Nested('BookCommentSchema', exclude=["book"]))
-#     stored_books = fields.List(fields.Nested('StoredBookSchema', exclude=["book"]))
-
-#     title = fields.String(required=True, validate=And(Length(min=3, error="Title must be at least 3 characters in length."), Regexp("^[A-Za-z0-9 ]+$", error="Title should start with a capital letter and contain alphanumeric only.")))
-   
-
-#     class Meta:
-#         fields = ("book_id", "title", "author", "language", "translator", "publisher", "publisher_city", "publication_date", "ebook_isbn", "print_isbn","book_comments")
-
-# # to handle a single books object
-# book_schema = BookSchema()
-
-# # to handle a list of books objects
-# books_schema = BookSchema(many=True, exclude=["book_comments"])
-
-
 
 
 

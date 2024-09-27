@@ -22,17 +22,18 @@ class User(db.Model):
 
 class UserSchema(ma.Schema):
     # exclusion of 'user' attribute from respective entities
-    bookshelves = fields.List(fields.Nested('BookshelfSchema', exclude=["user"]))
+    # bookshelves = fields.List(fields.Nested('BookshelfSchema', exclude=["user"]))
     book_comments = fields.List(fields.Nested('BookCommentSchema', exclude=["user"]))
 
     # validation of email according to format
     email = fields.String(required=True, validate=Regexp("^\S+@\S+\.\S+$", error="Invalid email Format."))
 
     class Meta:
-        fields = ("user_id", "name", "email", "user_name", "password", "is_admin", "bookshelves", "book_comments")
+        fields = ("user_id", "name", "email", "user_name", "password", "is_admin", "book_comments")
 
 # to handle a single user object
-user_schema = UserSchema(exclude=["password"])
+
+user_schema = UserSchema(only=["user_id", "user_name", "book_comments"])
 
 # to handle a list of user objects
-users_schema = UserSchema(many=True, exclude=["password"])
+users_schema = UserSchema(many=True, only=["user_id", "user_name", "book_comments"])
