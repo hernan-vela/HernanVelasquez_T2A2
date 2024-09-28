@@ -82,6 +82,7 @@ Function registered in the ```auth_controller.py```. Once the user is properly r
 	}
 ]
 ```
+
 Function registered at ```auth_controller.py```. This operation uses the authorisation blueprint to establish the http route, and it uses the ```@auth_as_admin_decorator``` to check if the user performing this action is admin or not. If it is not admin, it returns a message suchs as "Only admin can perform this action", but if the user is an admin the function filters the database, make a list of all the users a returns it with {"user_id", "name", "email"}.
 
 
@@ -140,6 +141,7 @@ Amended entry:
 	"message": "User with id {int:user_id} is deleted."
 }
 ```
+
 Function registered at ```auth_controller.py```. This operation can only be performed by the the admin. The function takes the 'user_id' as argument, it filters the ```users_profiles``` entity by it, and it deletes the user when finds it. A message of acknowledgement is displayed as "User with id {user_id} is deleted".
 If the user is not found a message is displayed as "User with id {user_id} not found."
 
@@ -248,9 +250,9 @@ Finally, if the bookshelves do not exist or the user is not the owner, a message
 	]
 }
 ```
+
 Function registered at ```bookshelves_controller.py```. Given that any registered user in the app can perform this operation, the function verify that the user is logged in with the ```jwt_required```. Then using the 'bookshelf_id' from the path, the program filter the 'bookshelves' entity to find the bookshelf and displays the information of the bookshelf.
 When the bookshelf does not exist, a message is returned saying "Bookshelf {bookshelf_id} does not exist".
-
 
 
 **Operation:** Add a book to a bookshelf
@@ -274,373 +276,263 @@ Function registered at ```bookshelves_controller.py```. This function uses the `
 If existence and ownership are confirmed, the information is taken from the body, filterd thrhough with the 'StoredBook' as reference. When the book is already in the bookshelf a message is returned such as "Book {book_id} already exists in bookshelf {bookshelf_id}", to avoid duplicity of stored books.
 If the book does not exist in the bookshelf, it is stored and an acknowledgement message is returned declaring "Book {book_id} added successfully to bookshelf {bookshelf_id}!"
 
-**Operation:** 
-**HTTP verb:** 
-**Path:** 
-**Body:** 
-**Auth:** 
-**Response:**
 
-**Operation:** 
-**HTTP verb:** 
-**Path:** 
-**Body:** 
-**Auth:** 
-**Response:**
-
-
-
-#### Operation on 'books' entity
-
-**Operation:** Fetch the whole library
-**HTTP verb:** GET
-**Path:**  http://localhost:8080/books
+**Operation:** Delete a book from a specific bookshelf
+**HTTP verb:** DELETE
+**Path:** http://localhost:8080/bookshelves/<int:bookshelf_id>/books/<int:book_id>
 **Body:** None
-**Response:** 
-```
-[
-{
+**Auth:** Token of bookshelf owner
+**Response:**
 
-    "book_id": "<int1>",
-    "title": "Story book",
-    "author": "Famous writer 1"
-},
+```JSON
 {
-    "book_id": "<int2>",
-    "title": "Story book",
-    "author": "Famous writer 2" 
-
-},
-{
-    "book_id": "<int3>",
-    "title": "Story book",
-    "author": "Famous writer 2" 
-
-},
-{
-    "book_id": "<int4>",
-    "title": "Story book",
-    "author": "Famous writer 3" 
-
+	"message": "Book <int:book_id> deleted succesfully from bookshelf int:bookshelf_id>!"
 }
+```
+
+Function registered at ```bookshelves_controller.py```. The function verifies that the person performing the deletion is the owner of the bookshelf by using ```jwt_required```. Then, the function takes the 'bookshelf_id' and 'user_id' and check existence and ownership of the shelf. If this is not true, a message is returned as "Bookshelf not found or not owned by the user".
+Then, by using the 'bookshelf_id' and 'book_id' existence and ownership are checked. When it is confirmed the book is fetched through the StoredBook model,it is deleted, and a message is returned saying "Book {book_id} deleted succesfully from bookshelf {bookshelf_id}!".
+If the book was not found in the bookshelf, a message is displayed saying "Book {book_id} coudln't be found in bookshelf {bookshelf_id}"
+
+
+#### Operation from the book comments controller
+
+**Operation:** Create a new comment of a book
+**HTTP verb:** POST
+**Path:** http://localhost:8080/books/<int:book_id>/book_comments
+**Body:** 
+```JSON
+{
+	"comment": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
+}
+```
+**Auth:** Token of registered user
+**Response:** (Example with book_id=1)
+```JSON
+{
+	"user": {
+		"user_id": 2,
+		"user_name": "vittoria.vetra"
+	},
+	"book": {
+		"book_id": 1,
+		"title": "Requiem for a nun",
+		"author": "William Faulkner"
+	},
+	"book_comment_id": 12,
+	"date": "2024-08-10",
+	"comment": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
+}
+```
+
+Function registered at ```book_comments_controller.py```. Any registered user can make a comment on any existent book in 'books' entity. To do this, the function validates that the person making the comment is registered with ```@jwt_required```, then it takes the data from the body and loads it according to the book schema.
+Next, with the 'book_id' in the http path, the book is found using the Book model, and if it exists, the comment is taken and added to the 'book_comments' entity.
+If the book_id does not exist, a message is displayed saying "Book with id {book_id} not found"
+
+
+**Operation:** Amend an existent book comment
+**HTTP verb:** PUT, PATCH
+**Path:** http://localhost:8080/books/<int:book_id>/book_comments/<int:book_comment>
+**Body:** 
+```JSON
+{
+	"comment": "Only portion of comment entry that can be modified"
+}
+```
+**Response:**
+
+
+**Operation:** 
+**HTTP verb:** 
+**Path:** 
+**Auth:**
+**Response:**
+
+
+
+
+
+#### Operation from the book controller
+
+**Operation:** fetch all the books in 'books' entity
+**HTTP verb:** GET
+**Path:** http://localhost:8080/books
+**Body:** None
+**Auth:** None
+**Response:**
+```JSON
+[
+	{
+		"book_id": 1,
+		"title": "Requiem for a nun",
+		"author": "William Faulkner"
+	},
+	{
+		"book_id": 2,
+		"title": "Autobiography of a Yogi",
+		"author": "Paramahansa Yogananda"
+	},
+	{
+		"book_id": 3,
+		"title": "Flatland",
+		"author": "Scott Atkins"
+	},
+	{
+		"book_id": 4,
+		"title": "Life of Pi",
+		"author": "Yann Martel"
+	},
+	{
+		"book_id": 5,
+		"title": "The Pill",
+		"author": "James Sweet"
+	}
 ]
 ```
+Function registered at ```books_controller.py```. This function can be performed by any user of the platform, even by unregistered users.
+It takes the request from the http path and returns a list of books in JSON format with {"book_id", "title", "author"}
 
-Function registered in ```books_controller.py```. 
 
-
-**Operation:** Fetch a specific book
+**Operation:** Fetch a specific book from the 'books' entity
 **HTTP verb:** GET
-**Path:**  http://localhost:8080/books/<int:book_id33>
+**Path:** http://localhost:8080/books/<int:book_id>
 **Body:** None
-**Auth:** user Token
-**Response:** 
-```
+**Auth:** None
+**Response:**(Example with book_id=2)
+```JSON
 {
-    "book_id": "<int:book_id33>,
-    "title": "The Reader",
-    "author": "Rainer Maria Rilke",
-    "language": "German",
-    "translator": "Erne Raim",
-    "publisher": "Scholastic",
-    "publisher_city": "Caana",
-    "publication_date": "1980",
-    "ebook_isbn": "0989765678987",
-    "print_isbn": "6667876545679"
+	"book_id": 2,
+	"title": "Autobiography of a Yogi",
+	"author": "Paramahansa Yogananda",
+	"language": "English",
+	"translator": "",
+	"publisher": "Crystal Clarity Publishers",
+	"publisher_city": "Chicago",
+	"publication_date": "1946-05-05",
+	"ebook_isbn": "9380590471004",
+	"print_isbn": "9781565892125"
 }
 ```
 
-Function registered in ```books_controller.py```. 
+Function registered at ```books_controller.py```. This function can be performed by any user of the platform, even by unregistered users. It takes the 'book_id' from the http path, and it looks into the database until the book is found. Then the book is displayed in a JSON format.
+If the book_id is not found, the program returns a message as "Book with id {book_id} does not exist".
 
-
-**Operation:** Create a book
+**Operation:** Add a new book
 **HTTP verb:** POST
-**Path:**  http://localhost:8080/books/
-**Body:**
-
-```
+**Path:** http://localhost:8080/books
+**Body:** 
+```JSON
 {
-    "title": "R",
-    "author": "Runt Runta",
-    "language": "English",
-    "translator": "",
-    "publisher": "Echo Books",
-    "publisher_city": "New York",
-    "publication_date": "1999",
-    "ebook_isbn": "0989755678987",
-    "print_isbn": "2667876545679"
+	"title": "The Pill",
+	"author": "James Sweet",
+	"language": "Portuguese",
+	"translator": "Milk Sullivan",
+	"publisher": "Cookie Inc",
+	"publisher_city": "Hammerland",
+	"publication_date": "2010-01-02",
+	"ebook_isbn": "839303948490",
+	"print_isbn": "6789097654536"
 }
 ```
-**Auth:** admin Token
-**Response:** 
-```
+**Auth:** Admin token
+**Response:**
+```JSON
 {
-    "Book with id {book_id} has been added"
+	"book_id": "34",
+    "title": "The Pill",
+	"author": "James Sweet",
+	"language": "Portuguese",
+	"translator": "Milk Sullivan",
+	"publisher": "Cookie Inc",
+	"publisher_city": "Hammerland",
+	"publication_date": "2010-01-02",
+	"ebook_isbn": "839303948490",
+	"print_isbn": "6789097654536"
 }
 ```
 
+Function registered at ```books_controller.py```. This operation can only be performed by the admin, so the program uses ```@auth_as_admin_decorator``` to validate whether the user adding the book is an admin. If the user is not an admin, it returns a message as "Only admin can perform this action".
+When the user is admin the data from the body is take, first the 'publication_date' is parsed and if it is not correctly loaded, a message explaining the format required is prompted. If the 'publication_date' is correct, the rest of the data from the body is taken according to Book model, then it is added, committed, and dumped in the 'book' entity.
 
-Function registered in ```books_controller.py```. 
 
-
-
-**Operation:** Delete a book
+**Operation:** Delete a book from the 'books' entity
 **HTTP verb:** DELETE
-**Path:**  http://localhost:8080/books/<int:book_id>
+**Path:** http://localhost:8080/books/<int:book_id>
 **Body:** None
-**Auth:** admin Token
-**Response:** 
-```
+**Auth:** Admin token
+**Response:**
+```JSON
 {
-    "Book with id {book_id} has been deleted."
+	"message": "Book <book_id> deleted successfully!"
 }
 ```
 
-Function registered in ```books_controller.py```. 
+Function registered at ```books_controller.py```. This operation can only be performed by the admin, so the program uses ```@auth_as_admin_decorator``` to validate whether the user deleting the book is an admin. If the user is not an admin, it returns a message as "Only admin can perform this action".
+If the user is and admin, the program takes the 'book_id' from the http path, and it looks into the database until the book is found. Then the book is deleted and a message such as "Book {book_id} deleted successfully!"
 
 
-**Operation:** Append a book
+**Operation:** Amend a book from the 'books' entity
 **HTTP verb:** PUT, PATCH
-**Path:**  http://localhost:8080/books/<int:book_id>
-**Body:**
-```
+**Path:** http://localhost:8080/books/<int:book_id>
+**Body:** (Example below, but any key can be modified but 'book_id')
+
+```JSON
 {
-    "publication_date": "2001",
+	"publisher": "Random Random",
+	"publisher_city": "Toronto"
+}
+```
+**Auth:** Admin token
+**Response:**
+
+```JSON
+{
+	"book_id": 3,
+	"title": "Flatland",
+	"author": "Scott Atkins",
+	"language": "English",
+	"translator": "",
+	"publisher": "Random Random",
+	"publisher_city": "Toronto",
+	"publication_date": "1955-01-01",
+	"ebook_isbn": "2280590471004",
+	"print_isbn": "2281565892125"
 }
 ```
 
-**Auth:** admin Token
-**Response:** 
-
-```
-{
-    "title": "The Endless Story",
-    "author": "Brito Gallag",
-    "language": "English",
-    "translator": "",
-    "publisher": "Echo Books",
-    "publisher_city": "Toscana",
-    "publication_date": "2001",
-    "ebook_isbn": "3489755678987",
-    "print_isbn": "5667876545679"
-}
-```
-
-Function registered in ```books_controller.py```. 
-
+Function registered at ```books_controller.py```. This operation can only be performed by the admin, so the program uses ```@auth_as_admin_decorator``` to validate whether the user deleting the book is an admin. If the user is not an admin, it returns a message as "Only admin can perform this action".
+The data is taken from the body of the request, loaded following the BookSchema and with 'partial=True' it allows the admin to modify some keys of the whole book entry.
+Then the 'publication_date' is parsed and if the date format is not valid, a message such as "Expected format for publication_date is YYYY-MM-DD" is returned.
+Next, the data from the body is compared with the original entry, and the keys to modified are changed. Finally, the system returns a the book information in a JSON format with the modified version.
 
 Original entry:
-
-```
-{
-    "title": "The Endless Story",
-    "author": "Brito Gallag",
-    "language": "English",
-    "translator": "",
-    "publisher": "Echo Books",
-    "publisher_city": "Toscana",
-    "publication_date": "1967",
-    "ebook_isbn": "3489755678987",
-    "print_isbn": "5667876545679"
-}
-```
-
-Updated entry:
-
-```
-{
-    "title": "The Endless Story",
-    "author": "Brito Gallag",
-    "language": "English",
-    "translator": "",
-    "publisher": "Echo Books",
-    "publisher_city": "Toscana",
-    "publication_date": "2001",
-    "ebook_isbn": "3489755678987",
-    "print_isbn": "5667876545679"
-}
-```
-
-
-#### Operations on 'bookshelves' entity
-
-**Operation:** Fetch all the bookshelves of a user
-**HTTP verb:** GET
-**Path:** http://localhost:8080/bookshelf
-**Body:** None
-**Response:** 
-```
-{
-	"user_id": "<int1>",
-	"user_name": "John Doe",
-	"bookshelves": [
-        {
-            "bookshelf_id": "<int2>",
-            "status": "Read",
-            "start_date": "2021-10-11",
-            "end_date": "",
-            "review": "Opinion bout book"
-        },
-        {
-            "bookshelf_id": "<int3>",
-            "title": "Name_of_the_book",
-            "author": "author_of_book,
-            "status": "To-read",
-            "start_date": "2021-01-09",
-            "end_date": "",
-            "review": "Opinion about book"
-        },
-        {
-            "bookshelf_id": "<int4>",
-            "title": "Name_of_the_book",
-            "author": "author_of_book,
-            "status": "Reading",
-            "start_date": "2021-10-10",
-            "end_date": "",
-            "review": "Opinion about book"
-        }
-    ]
-}
-```
-Function registered in the ```bookshelves_controller.py```, this function validates the user with the ```jwt_required```, and it returns a list with the user name, ```user_id``` and all the bookshelves created by the user.
-
-**Operation:** Fetch all books on the same bookshelf
-**HTTP verb:** GET
-**Path:** http://localhost:8080/users_profiles/<int:user_id>/bookshelves/<status>/books
-**Body:** None
-**Response:** 
-```
-{
-	"user_id": "<int1>",
-	"bookshelf_id": "<int1>, # Reading
-    "books": [
-        {
-            "book_id": "3",
-            "title": "Flatland",
-            "author": "Scoot Atkins",
-            "start_date": "2024-07-01"
-            "end_date": "",
-            "review": ""
-        },
-        {
-            "book_id": "4"
-            "title": "The adventures of Tom Sawyer"
-            "author": "Mark Twain",
-            "start_date": "2024-07-12"
-            "end_date": "",
-            "review": ""
-        }
-    ]
-}
-```    
-
-
-
-
-
-
-         
-
-
-Function registered in the ```bookshelves_controller.py```.....from status "Reading"
-
-**WILL THIS OPERATION ADD A BOOKSHELF**
-
-
-
-**Operation:** Add a book to a bookshelf
-**HTTP verb:** POST
-**Path:** http://localhost:8080/bookshelf/<int:bookshelf_id>/book/<int:book_id>
-**Body:** None
-**Auth:** user Token
-**Response:** 
-```
-{"Bookshelf with book {title} was successfully added!"}
-```
-
-Function registered in the ```bookshelves_controller.py```
-
-
-**WHAT WOULD IT HAPPEN IF THE URL IS THE SAME AS DELETE BOOKSHELF**
-
-**Operation:** Delete a bookshelf
-**HTTP verb:**  DELETE
-**Path:** http://localhost:8080/bookshelf/<int:bookshelf_id>
-**Body:** None
-**Auth:** user Token
-**Response:** 
-```
-{"Your bookshelf {bookshelf_id} has been deleted!"}
-```
-Function registered in the ```bookshelves_controller.py```
-
-
-
-**Operation:** Update an existent bookshelf of a user
-**HTTP verb:** PUT, PATCH
-**Path:** http://localhost:8080/bookshelf/<int:bookshelf_id>
-**Body:** Only bookshelves with "Reading" and "To-read" statuses can be changed.
 ```JSON
 {
-   "status": "Read",
-   "end_date": "2021-03-25"
-}
-```
-**Auth:** user Token
-**Response:** 
-```
-{
-    "status": "Read",
-    "end_date": "2021-03-25",
-    "review": "Updated opinion about the book"
-}
-```
-Function registered in the ```bookshelves_controller.py```
-
-Original bookshelf entry:
-```
-{
-   "bookshelf_id": "<int4>",
-    "title": "Name_of_the_book",
-    "author": "author_of_book,
-    "status": "Reading",
-    "start_date": "2024-10-04",
-    "end_date": "",
-    "review": "Opinion about book"
+	"book_id": 3,
+	"title": "Flatland",
+	"author": "Scott Atkins",
+	"language": "English",
+	"translator": "",
+	"publisher": "Geometry",
+	"publisher_city": "Chicago",
+	"publication_date": "1955-01-01",
+	"ebook_isbn": "2280590471004",
+	"print_isbn": "2281565892125"
 }
 ```
 
-Updated bookshelf entry:
-```{
-    "bookshelf_id": "<int3>",
-    "title": "Name_of_the_book",
-    "author": "author_of_book,
-    "status": "Read",
-    "start_date": "2021-01-09",
-    "end_date": "2021-03-25",
-    "review": "Updated opinion about the book"
-}
-```
-
-
-
-
-**Operation:** 
-**HTTP verb:** 
-**Path:** 
-**Body:**
+Amended entry:
 ```JSON
 {
-   
+	"book_id": 3,
+	"title": "Flatland",
+	"author": "Scott Atkins",
+	"language": "English",
+	"translator": "",
+	"publisher": "Random Random",
+	"publisher_city": "Toronto",
+	"publication_date": "1955-01-01",
+	"ebook_isbn": "2280590471004",
+	"print_isbn": "2281565892125"
 }
 ```
-**Auth:** 
-**Response:** 
-```
-{
-
-}
-```
-Function registered in the ```auth_controller.py```
-
-

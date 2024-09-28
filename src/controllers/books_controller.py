@@ -23,6 +23,8 @@ def get_all_books():
 # /books/<id> - GET - fetch a specific book
 @books_bp.route("/<int:book_id>")
 def get_a_book(book_id):
+
+    # filter the entity 'books' with book_id
     stmt = db.select(Book).filter_by(book_id=book_id)
     book = db.session.scalar(stmt)
     if book :
@@ -96,6 +98,18 @@ def update_book(book_id):
     # get the book from books_shelves
     stmt = db.select(Book).filter_by(book_id=book_id)
     book = db.session.scalar(stmt)
+    
+    publication_date = body_data.get("publication_date")
+    
+    # parsing the publication date
+    if publication_date:
+        try:
+            publication_date = datetime.strptime(publication_date, '%Y-%m-%d').date()
+        except ValueError:
+            return {"error": "Expected format for publication_date is YYYY-MM-DD"}, 400
+    else:
+        publication_date = None
+    
     if book:
         # update the field as required
         book.title = body_data.get("title") or book.title,
@@ -104,15 +118,7 @@ def update_book(book_id):
         book.translator = body_data.get("translator") or book.translator
         book.publisher = body_data.get("publisher") or book.publisher
         book.publisher_city = body_data.get("publisher_city") or book.publisher_city
-
-        # parsing 'publication_date'
-        book.publication_date = body_data.get("publication_date") or book.publication_date
-        if book.publication_date:
-            try:
-                book.publication_date = datetime.strptime(book.publication_date, '%Y-%m-%d').date()
-            except ValueError:
-                return {"error": "Expected format for publication_date is YYYY-MM-DD"}, 400
-
+        publication_date = publication_date or book.publication_date
         book.ebook_isbn = body_data.get("ebook_isbn") or book.ebook_isbn
         book.print_isbn = body_data.get("print_isbn") or book.print_isbn
 
@@ -125,3 +131,5 @@ def update_book(book_id):
     else:
         # return an error message   
         return {"error": f"Book with id {book_id} not found"}, 404
+
+

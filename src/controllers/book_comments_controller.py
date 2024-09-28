@@ -8,7 +8,7 @@ from models.book_comments import BookComment, book_comment_schema, book_comments
 from models.books import Book
 
 # creation of book_comments blueprint
-book_comments_bp = Blueprint("book_comments", __name__, url_prefix="/<int:book_id>/book_comments")
+book_comments_bp = Blueprint("book_comments", __name__, url_prefix="books/<int:book_id>/book_comments")
 
 # create a book_comment route
 # /book_comment - POST - create a new book_comment
@@ -38,12 +38,29 @@ def create_book_comment(book_id):
         # return error
         return {"error": f"Book with id {book_id} not found"}, 404
 
+
+
+
+
+
 # DELETE - delete a book_comment
 @book_comments_bp.route("/<int:book_comment_id>", methods=["DELETE"])
 @jwt_required()
-def delete_book_comment(book_id, book_comment_id):
+def delete_book_comment(book_comment_id):
+
+    # check if the authenticated user owns the book_comment
+    user = get_jwt_identity()
+
+    # fetch the book_comment to check existence and ownership
+    stmt = db.select(BookComment).filter_by(user_id=user, book_comment_id=book_comment_id)
+    book_comment = db.session.scalar(stmt)
+
+    # nice message if not existence, or ownership
+    if not book_comment:
+        return {"message": "Book comment not found or not owned by the user."}, 404
+
     # fetch the book_comment from books_shelves with id=comment_id
-    stmt = db.select(BookComment).filter_by(book_comment_id=book_comment_id, book_id=book_id)
+    stmt = db.select(BookComment).filter_by(book_comment_id=book_comment_id)
     book_comment = db.session.scalar(stmt)
     # if book_comment exists
     if book_comment:
@@ -56,6 +73,13 @@ def delete_book_comment(book_id, book_comment_id):
     else:
         # return error message
         return {"error": f"Book_comment with id {book_comment_id} does not exist"}, 404
+
+
+
+
+
+
+
 
 # /books/book_id/book_comments/book_comment_id- PUT, PATCH - edit a book_comment entry
 @book_comments_bp.route("/<int:book_comment_id>", methods=["PUT", "PATCH"])
