@@ -25,7 +25,7 @@ class BookComment(db.Model):
 
 # schema to get comments of one book
 class BookCommentSchema(ma.Schema):
-    # IS THIS CORRECT? WILL IT FETCH A LIST OF COMMENTS OF ONE USER?
+    
     user = fields.Nested('UserSchema', only=["user_id", "user_name"])
     book = fields.Nested('BookSchema', only=["book_id", "title", "author"])
 

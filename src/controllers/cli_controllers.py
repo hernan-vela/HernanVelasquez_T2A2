@@ -33,6 +33,13 @@ def seed_tables():
             user_name = "vittoria.vetra",
             password = bcrypt.generate_password_hash("vv3436336").decode("utf-8"),
             is_admin = False
+        ),
+        User(
+            name = "Quino Qaro",
+            email = "quino.qaro@email.com",
+            user_name = "quino.qaro",
+            password = bcrypt.generate_password_hash("qq3436336").decode("utf-8"),
+            is_admin = False
         )
     ]
 
@@ -69,15 +76,15 @@ def seed_tables():
 
     books = [
         Book(
-            title = "The Indispensable Calvin and Hobbes: A Calvin and Hobbes Treasury",
-            author = "Bill Watterson",
+            title = "Requiem for a nun",
+            author = "William Faulkner",
             language = "English",
-            translator = "Ed Mont",
-            publisher = "Scholastic",
-            publisher_city = "New York",
-            publication_date = "1992-03-03",
-            ebook_isbn = "9780590471794",
-            print_isbn = "9880590471794"
+            translator = "",
+            publisher = "Random House",
+            publisher_city = "United Kingdom",
+            publication_date = "2013-07-05",
+            ebook_isbn = "9781446485651",
+            print_isbn = "7780590471777"
         ), 
         Book(
             title = "Autobiography of a Yogi",
@@ -100,6 +107,17 @@ def seed_tables():
             publication_date = "1955-01-01",
             ebook_isbn = "2280590471004",
             print_isbn = "2281565892125"
+        ),
+        Book(
+            title = "Life of Pi",
+            author = "Yann Martel",
+            language = "English",
+            translator = "Regit Tanger",
+            publisher = "Blomsbury",
+            publisher_city = "Toronto",
+            publication_date = "2022-01-27",
+            ebook_isbn = "9781350295698",
+            print_isbn = "3381565892145"
         )
     ]
 
@@ -108,16 +126,40 @@ def seed_tables():
     book_comments = [
         BookComment(
             date = date.today(),
-            user = users[1],
+            user = users[0],
             book = books[0],
-            comment = "Incredible story. I couldn't recommend it more" 
+            comment = "Good Story" 
         ), 
         BookComment(
             date = date.today(),
-            user = users[0],
+            user = users[1],
             book = books[0],
-            comment = "It was a good read for my 4 hours flight."    
-        )
+            comment = "Marvelous"    
+        ),
+        BookComment(
+            date = date.today(),
+            user = users[2],
+            book = books[0],
+            comment = "No good." 
+        ), 
+        BookComment(
+            date = date.today(),
+            user = users[2],
+            book = books[0],
+            comment = "I re-read. I relate now."   
+        ),
+        BookComment(
+            date = date.today(),
+            user = users[2],
+            book = books[1],
+            comment = "Enlightening" 
+        ), 
+        BookComment(
+            date = date.today(),
+            user = users[2],
+            book = books[2],
+            comment = "Better than the movie."   
+        )    
     ]
 
     db.session.add_all(book_comments)

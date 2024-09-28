@@ -16,13 +16,12 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, default=False)
 
     # relationship between entities 'bookshelf' --> 'users_profiles'
-    bookshelves = db.relationship('Bookshelf', back_populates='user')
+    bookshelves = db.relationship('Bookshelf', back_populates='user', cascade="all, delete")
     # relationship between entities 'book_comments' --> 'users_profiles'
     book_comments = db.relationship('BookComment', back_populates='user')
 
 class UserSchema(ma.Schema):
     # exclusion of 'user' attribute from respective entities
-    # bookshelves = fields.List(fields.Nested('BookshelfSchema', exclude=["user"]))
     book_comments = fields.List(fields.Nested('BookCommentSchema', exclude=["user"]))
 
     # validation of email according to format
@@ -33,7 +32,23 @@ class UserSchema(ma.Schema):
 
 # to handle a single user object
 
-user_schema = UserSchema(only=["user_id", "user_name", "book_comments"])
+user_schema = UserSchema(only=["user_id", "name", "user_name", "book_comments"])
 
 # to handle a list of user objects
 users_schema = UserSchema(many=True, only=["user_id", "user_name", "book_comments"])
+
+
+class AllUserSchema(ma.Schema):
+
+    # validation of email according to format
+    email = fields.String(required=True, validate=Regexp("^\S+@\S+\.\S+$", error="Invalid email Format."))
+
+    class Meta:
+        fields = ("user_id", "name", "email", "user_name", "password", "is_admin")
+
+# to handle a single user object
+
+all_user_schema = AllUserSchema(only=["user_id", "name", "email"])
+
+# to handle a list of user objects
+all_users_schema = AllUserSchema(many=True, only=["user_id", "name", "email"])

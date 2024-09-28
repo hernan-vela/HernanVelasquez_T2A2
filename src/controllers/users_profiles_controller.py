@@ -9,10 +9,10 @@ from models.bookshelves import Bookshelf, bookshelf_user_schema, bookshelves_use
 from models.stored_books import StoredBook
 from models.users_profiles import User
 
-users_profiles_bp = Blueprint("users_profiles", __name__, url_prefix="")
+users_profiles_bp = Blueprint("users_profiles", __name__, url_prefix="/users_profiles")
 
-# GET - fetch all the bookshelves of a user
-@users_profiles_bp.route("/users_profiles/<int:user_id>/bookshelves")
+# GET - fetch all the bookshelves and its books of a user
+@users_profiles_bp.route("/<int:user_id>/bookshelves")
 @jwt_required()
 def get_bookshelves(user_id):
     user_id = get_jwt_identity()

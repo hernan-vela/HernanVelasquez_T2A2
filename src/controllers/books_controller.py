@@ -37,6 +37,8 @@ def get_a_book(book_id):
 def create_book():
     # get the data from the body of the request
     body_data = book_schema.load(request.get_json())
+
+    publication_date = body_data.get("publication_date")
     
     # parsing the publication date
     if publication_date:
@@ -44,8 +46,8 @@ def create_book():
             publication_date = datetime.strptime(publication_date, '%Y-%m-%d').date()
         except ValueError:
             return {"error": "Expected format for publication_date is YYYY-MM-DD"}, 400
-        else:
-            publication_date = None
+    else:
+        publication_date = None
 
     # create a new book model instance        
     book = Book(

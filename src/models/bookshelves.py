@@ -20,7 +20,7 @@ class Bookshelf(db.Model):
     user = db.relationship('User', back_populates='bookshelves')
     
     # relationship between entities 'stored_book' --> 'bookshelf'
-    stored_books = db.relationship('StoredBook', back_populates='bookshelf')
+    stored_books = db.relationship('StoredBook', back_populates='bookshelf', cascade="all, delete")
 
 
 # schema to fetch bookshelves of a user

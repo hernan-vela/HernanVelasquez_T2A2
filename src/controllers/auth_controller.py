@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 
 from models.bookshelves import Bookshelf
-from models.users_profiles import User, user_schema, UserSchema
+from models.users_profiles import User, user_schema, users_schema, all_users_schema, UserSchema, AllUserSchema
 from init import bcrypt, db
 from utils import auth_as_admin_decorator
 
@@ -13,7 +13,7 @@ from datetime import date, timedelta
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
-# route to user registration
+# user registration
 @auth_bp.route("/register", methods=["POST"])
 def register_user():
     try:
@@ -69,17 +69,29 @@ def login_user():
     else:
         # respond back with an error message
         return {"error": "Email or password incorrect"}, 400
+    
+
+# GET - a list of users (only admin)
+@auth_bp.route("/users_profiles")
+@jwt_required()
+# authenticate user as admin
+@auth_as_admin_decorator
+def get_all_users():
+
+    stmt = db.select(User)
+    users = db.session.scalars(stmt)
+    return all_users_schema.dump(users)
 
 # /auth/users/user_id
 @auth_bp.route("/users_profiles/<int:user_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 @auth_as_admin_decorator
-def update_user():
+def update_user(user_id):
     # get field from the body of the request
     body_data = UserSchema().load(request.get_json(), partial=True)
     password = body_data.get("password")
     # fetch the user from 'books_shelves'
-    stmt = db.select(User).filter_by(id=get_jwt_identity())
+    stmt = db.select(User).filter_by(user_id=user_id)
     user = db.session.scalar(stmt)
     # if exists:
     if user:
@@ -97,13 +109,12 @@ def update_user():
         # return an error message
         return {"error": "User does not exist."}
 
-# /auth/users/user_id
+# DELETE - eliminate an user (only admin)
 @auth_bp.route("/users_profiles/<int:user_id>", methods=["DELETE"])
 @jwt_required()
 @auth_as_admin_decorator
 def delete_user(user_id):
     # find the user with the id from the db
-    # SELECT * FROM users_profiles WHERE id==user_id;
     stmt = db.select(User).filter_by(user_id=user_id)
     user = db.session.scalar(stmt)
     # if exists:
@@ -117,3 +128,5 @@ def delete_user(user_id):
     else:
         # return error message
         return {"message": f"User with id {user_id} not found."}, 404
+    
+
