@@ -32,10 +32,10 @@ class UserSchema(ma.Schema):
 
 # to handle a single user object
 
-user_schema = UserSchema(only=["user_id", "name", "user_name", "book_comments"])
+user_schema = UserSchema(only=["user_id", "name", "user_name"])
 
 # to handle a list of user objects
-users_schema = UserSchema(many=True, only=["user_id", "user_name", "book_comments"])
+users_schema = UserSchema(many=True, only=["user_id", "user_name"])
 
 
 class AllUserSchema(ma.Schema):
@@ -48,7 +48,7 @@ class AllUserSchema(ma.Schema):
 
 # to handle a single user object
 
-all_user_schema = AllUserSchema(only=["user_id", "name", "email"])
+# all_user_schema = AllUserSchema(only=["user_id", "name", "email"])
 
 # to handle a list of user objects
 all_users_schema = AllUserSchema(many=True, only=["user_id", "name", "email"])

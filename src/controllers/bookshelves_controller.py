@@ -13,13 +13,17 @@ bookshelves_bp = Blueprint("bookshelves", __name__, url_prefix="/bookshelves")
 
 # GET - fetch all books in a bookshelf of any user
 @bookshelves_bp.route("/<int:bookshelf_id>")
+@jwt_required()
 def get_a_bookshelf(bookshelf_id):
+
+    # filter 'bookshelves' entity to find the bookshelf_id
     stmt = db.select(Bookshelf).filter_by(bookshelf_id=bookshelf_id)
-
-    #db.select(Book).join(StoredBook).where(StoredBook.bookshelf_id==bookshelf_id, Book.book_id==StoredBook.book_id)
-
     bookshelf = db.session.scalar(stmt)
-    return bookshelf_user_schema.dump(bookshelf)
+
+    if bookshelf:
+        return bookshelf_user_schema.dump(bookshelf)
+    else:
+        return {"error": f"Bookshelf {bookshelf_id} does not exist"}, 404
 
 
 # POST - add a book to a specific bookshelf

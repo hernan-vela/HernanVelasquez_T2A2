@@ -85,7 +85,7 @@ def get_all_users():
 # /auth/users/user_id
 @auth_bp.route("/users_profiles/<int:user_id>", methods=["PUT", "PATCH"])
 @jwt_required()
-@auth_as_admin_decorator
+#@auth_as_admin_decorator
 def update_user(user_id):
     # get field from the body of the request
     body_data = UserSchema().load(request.get_json(), partial=True)

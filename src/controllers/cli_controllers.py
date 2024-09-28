@@ -69,6 +69,18 @@ def seed_tables():
         Bookshelf(
             status = "to-read",
             user = users[1]            
+        ),
+        Bookshelf(
+            status = "read",
+            user = users[2]
+        ), 
+        Bookshelf(
+            status = "reading",
+            user = users[2]            
+        ),
+        Bookshelf(
+            status = "to-read",
+            user = users[2]
         )
     ]
 
