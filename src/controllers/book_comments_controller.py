@@ -8,18 +8,20 @@ from models.book_comments import BookComment, book_comment_schema, book_comments
 from models.books import Book
 
 # creation of book_comments blueprint
-book_comments_bp = Blueprint("book_comments", __name__, url_prefix="books/<int:book_id>/book_comments")
+book_comments_bp = Blueprint("book_comments", __name__, url_prefix="/books/<int:book_id>/book_comments")
 
-# create a book_comment route
+
 # /book_comment - POST - create a new book_comment
 @book_comments_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_book_comment(book_id):
     # get the data from the body of the request
     body_data = book_comment_schema.load(request.get_json())
+
     # fetch the book with id=book_id
     stmt = db.select(Book).filter_by(book_id=book_id)
     book = db.session.scalar(stmt)
+
     # if book exists:
     if book:
         # create a new book_comment model instance
@@ -29,16 +31,16 @@ def create_book_comment(book_id):
         book = book,
         comment = body_data.get("comment") 
         )
+
         # add and commit to book_comments
         db.session.add(book_comment)
         db.session.commit()
+
         # response message
         return book_comment_schema.dump(book_comment), 201
     else:
         # return error
         return {"error": f"Book with id {book_id} not found"}, 404
-
-
 
 
 

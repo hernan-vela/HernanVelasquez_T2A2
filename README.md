@@ -3,6 +3,133 @@
 ## API Server
 
 
+### Allocation and tracking of tasks throuhout the API project
+
+Considering the timeframe, and workload for my skills and priorities, the project was planned with 5 main stages, as follows: draft models, draft controllers, complete CRUD operations for app features, test endopoints and debugging until endpoints work flawlessly. The layout of the project plan can be witnessed in **Trello** where the cards show deadlines, and additional checklists to detail each stage.
+
+
+
+
+![day-0](./docs/trello-screenshots/Screenshot%202024-09-22%20at%2010.33.39 PM.png)
+Day 0 of the API project.
+
+#### Stage 0. Create local & remote repo in Github
+**Deadline: Sep 23, 2024 / 22:00**
+
+![stage-0](./docs/trello-screenshots/Screenshot%202024-09-23%20at%201.44.33 PM.png)
+Creation of repository and main folders
+
+![stage-0](./docs/trello-screenshots/Screenshot%202024-09-23%20at%203.32.26 PM.png)
+Completion of repository skeleton
+
+#### Stage 1. Drafting models for each entity
+**Deadline: Sep 23, 2024 / 22:00**
+
+![draft-models](./docs/trello-screenshots/Screenshot%202024-09-23%20at%203.46.57 PM.png)
+Models of entities
+
+![users_profiles-model](./docs/trello-screenshots/Screenshot%202024-09-23%20at%203.47.30 PM.png)
+Completion of 'users_profiles' model
+
+![bookshelves-book_comments-models](./docs/trello-screenshots/Screenshot%202024-09-23%20at%205.38.00 PM.png)
+Completion of 'bookshelves' and 'book_comments' models
+
+![models-completed](./docs/trello-screenshots/Screenshot%202024-09-23%20at%206.36.07 PM.png)
+Drafting models: completed
+
+#### Stage 2. Drafting controllers for relevant operations
+**Deadline: 25 Sep, 2024 / 22:00**
+
+![drafting-controllers](./docs/trello-screenshots/Screenshot%202024-09-24%20at%204.40.09 PM.png)
+Completion of cli, book_comments, books and auth controllers
+
+At this stage was clear that given that the entity ```stored_books``` is a junction entity, CRUD operations are not relevant here for this specific project.
+
+![controllers-complete](./docs/trello-screenshots/Screenshot%202024-09-24%20at%207.25.35 PM.png)
+Completion of controllers drafts
+
+#### Stage 3. Complete authorisation for relevant CRUD operations
+**Deadline: 26 Sep, 2024 / 22:00**
+
+![crud-operations](./docs/trello-screenshots/Screenshot%202024-09-24%20at%205.25.25 PM.png)
+CRUD operations planned for the API (early stage)
+
+![c-book-d-book](./docs/trello-screenshots/Screenshot%202024-09-25%20at%205.09.43 PM.png)
+Operations of adding and creating a book
+
+![crud-updated](./docs/trello-screenshots/Screenshot%202024-09-25%20at%208.31.19 PM.png)
+More CRUD operations added. Fetching all books and a specific book, complete (midterm stage)
+
+![crud-get-comments](./docs/trello-screenshots/Screenshot%202024-09-25%20at%209.13.37 PM.png)
+More CRUD operations added. Creat a book comment, get comments per book, and per user complete
+
+![all-crud-but-bookshelves](./docs/trello-screenshots/Screenshot%202024-09-26%20at%204.31.41 PM.png)
+Most of CRUD operations completed, except CRU for bookshelves
+
+![crud-complete](./docs/trello-screenshots/Screenshot%202024-09-26%20at%206.34.09 PM.png)
+CRUD complete. Afterwards, during the testing period the operation to update a bookshelf, more precisely a stored book in a bookshelf, was dismissed to mantain the simplicity of the API.
+
+#### Stages 4 & 5. Testing endpoints / Debugging
+**Deadline: 26 Sep, 2024 / 22:00**
+
+These tasks are performed simultaneously, before the last and final testing.
+
+![testing-endpoints](./docs/trello-screenshots/Screenshot%202024-09-25%20at%209.14.21 PM.png)
+Beginning of tests for each endopoints. Here, the most of endpoints should run without crashing.
+
+![endpoints](./docs/trello-screenshots/Screenshot%202024-09-25%20at%209.14.37 PM.png)
+Endpoints register and login completed
+
+![endpoints](./docs/trello-screenshots/Screenshot%202024-09-26%20at%209.46.09 PM.png)
+Completion of CRUD operation endpoints for users, books and book comments. 
+
+![endpoints-completed](./docs/trello-screenshots/Screenshot%202024-09-26%20at%2010.39.12 PM.png)
+Endpoints working well. Small adjustments in the final stage of debugging. Updating a stored book in a bookshelf was discarded.
+
+#### Final Stage. Final test of endpoints
+**Deadline: 27 Sep, 2024 / 22:00**
+
+![final-test-endpoints](./docs/trello-screenshots/Screenshot%202024-09-29%20at%203.01.24 AM.png)
+Final test for the endpoints completed
+
+#### Overview of the evolution of the API project
+
+![repo-models](./docs/trello-screenshots/Screenshot%202024-09-23%20at%203.33.02 PM.png)
+Repo created and working on drafting models
+
+![controllers](./docs/trello-screenshots/Screenshot%202024-09-23%20at%206.37.21 PM.png)
+Models completed and working on drafting controllers
+
+![crud-operations](./docs/trello-screenshots/Screenshot%202024-09-24%20at%207.26.05 PM.png)
+Controllers finishes. Working on CRUD operations
+
+![testing-endpoints](./docs/trello-screenshots/Screenshot%202024-09-25%20at%209.14.53 PM.png)
+Testing endpoints while creating them
+
+![crud-finished-testing-ongoing](./docs/trello-screenshots/Screenshot%202024-09-26%20at%206.34.29 PM.png)
+Rough version of CRUD operation finished. Just testing endopoints
+
+![testin-done-debuggin-now](./docs/trello-screenshots/Screenshot%202024-09-26%20at%2010.39.49 PM.png)
+Testing completed. Working on debugging. Task overdue
+
+![debugging-and-final-testing](./docs/trello-screenshots/Screenshot%202024-09-27%20at%201.21.44 PM.png)
+Debugging and final testing of endopints.
+
+![debugging-and-final-testing-done](./docs/trello-screenshots/Screenshot%202024-09-27%20at%204.41.42 PM.png)
+Completion of debugging and final testing of endpoints
+
+![coding-completed](./docs/trello-screenshots/Screenshot%202024-09-27%20at%204.42.13 PM.png)
+Coding completed. Next task is documentation.
+
+![documentation-ongoing](./docs/trello-screenshots/Screenshot%202024-09-27%20at%204.42.32 PM.png)
+Working on documentation
+
+![project-finished](./docs/trello-screenshots/Screenshot%202024-09-29%20at%203.02.09 AM.png)
+Project finished
+
+
+
+
 ### Operation of API endpoints
 
 #### Operations from the authorisation controller
