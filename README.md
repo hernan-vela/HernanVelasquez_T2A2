@@ -7,7 +7,8 @@
 
 Considering the timeframe, and workload for my skills and priorities, the project was planned with 5 main stages, as follows: draft models, draft controllers, complete CRUD operations for app features, test endopoints and debugging until endpoints work flawlessly. The layout of the project plan can be witnessed in **Trello** where the cards show deadlines, and additional checklists to detail each stage.
 
-
+#### Trello: [Books & Shelves management resource](https://trello.com/invite/b/66e391591a3af71aa21050d1/ATTI9da0294d53b14ef5deb7617a03729a38213C333E/api-server-t2a2)
+(Please, access **Trello** as a member to view this content)
 
 
 ![day-0](./docs/trello-screenshots/Screenshot%202024-09-22%20at%2010.33.39 PM.png)
@@ -126,8 +127,6 @@ Working on documentation
 
 ![project-finished](./docs/trello-screenshots/Screenshot%202024-09-29%20at%203.02.09 AM.png)
 Project finished
-
-
 
 
 ### Operation of API endpoints

@@ -34,7 +34,6 @@ class BookSchema(ma.Schema):
 # to handle a single 'books' object
 book_schema = BookSchema()
 
-
 # 'books' schema to fetch all the books
 class BookLibrarySchema(ma.Schema):
 
@@ -45,6 +44,16 @@ class BookLibrarySchema(ma.Schema):
 books_library_schema = BookLibrarySchema(many=True)
 
 
+
+
+# # 'books' schema to a book and its comments
+# class BookLibrarySchema(ma.Schema):
+
+#     class Meta:
+#         fields = ("book_id", "title", "author")
+
+# # to handle a list of books objects
+# books_library_schema = BookLibrarySchema(many=True)
 
 
 

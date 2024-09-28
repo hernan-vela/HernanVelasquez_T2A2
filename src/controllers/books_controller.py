@@ -1,10 +1,13 @@
-from datetime import datetime
+# ELIMINATE date TO RESTORE
+from datetime import datetime, date
  
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from init import db
-from models.books import Book, book_schema, books_library_schema 
+from models.books import Book, book_schema, books_library_schema
+# ELIMINATE MODEL OF BOOK COMMENT RESTORE 
+from models.book_comments import BookComment
 
 from controllers.book_comments_controller import book_comments_bp
 
@@ -24,7 +27,7 @@ def get_all_books():
 @books_bp.route("/<int:book_id>")
 def get_a_book(book_id):
 
-    # filter the entity 'books' with book_id
+    # filter the entity 'books' by book_id
     stmt = db.select(Book).filter_by(book_id=book_id)
     book = db.session.scalar(stmt)
     if book :
@@ -131,5 +134,3 @@ def update_book(book_id):
     else:
         # return an error message   
         return {"error": f"Book with id {book_id} not found"}, 404
-
-

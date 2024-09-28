@@ -39,17 +39,21 @@ def add_book_to_bookshelf(bookshelf_id, book_id):
 
     # nice message if not existence, or ownership
     if not bookshelf_owned:
-        return {"message": "Bookshelf not found or not owned by the user."}, 404
+        return {"message": f"Bookshelf not found or not owned by the user."}, 404
 
-    # get the data to store from the request body
-    body_data = request.get_json()
+    # check if the book_id exists in the database
+    book_exists_stmt = db.select(db.exists().where(Book.book_id==book_id))
+    book_exists = db.session.scalar(book_exists_stmt)
+
+    if not book_exists:
+        return {"message": f"Book with id {book_id} does not exist."}, 404
 
     # check if book_id already exists in the given bookshelf
     stmt = db.select(StoredBook).filter_by(bookshelf_id=bookshelf_id, book_id=book_id)
-    existing_book = db.session.scalar(stmt)
+    stored_book = db.session.scalar(stmt)
 
     # if the book_id exists, return a message
-    if existing_book:
+    if stored_book:
         return {"message": f"Book {book_id} already exists in bookshelf {bookshelf_id}"}, 400
 
     # add the book to the bookshelf

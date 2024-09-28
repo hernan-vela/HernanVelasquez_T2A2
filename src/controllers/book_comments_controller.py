@@ -8,7 +8,7 @@ from models.book_comments import BookComment, book_comment_schema, book_comments
 from models.books import Book
 
 # creation of book_comments blueprint
-book_comments_bp = Blueprint("book_comments", __name__, url_prefix="/books/<int:book_id>/book_comments")
+book_comments_bp = Blueprint("book_comments", __name__, url_prefix="/<int:book_id>/book_comments/")
 
 
 # /book_comment - POST - create a new book_comment
@@ -16,7 +16,8 @@ book_comments_bp = Blueprint("book_comments", __name__, url_prefix="/books/<int:
 @jwt_required()
 def create_book_comment(book_id):
     # get the data from the body of the request
-    body_data = book_comment_schema.load(request.get_json())
+    body_data = request.get_json()
+    # ORIGINAL - body_data = book_comment_schema.load(request.get_json())
 
     # fetch the book with id=book_id
     stmt = db.select(Book).filter_by(book_id=book_id)
@@ -26,10 +27,10 @@ def create_book_comment(book_id):
     if book:
         # create a new book_comment model instance
         book_comment = BookComment(
-        user_id = get_jwt_identity(),
-        date = date.today(),
-        book = book,
-        comment = body_data.get("comment") 
+            user_id = get_jwt_identity(),
+            date = date.today(),
+            book = book,
+            comment = body_data.get("comment") 
         )
 
         # add and commit to book_comments
@@ -44,11 +45,10 @@ def create_book_comment(book_id):
 
 
 
-
 # DELETE - delete a book_comment
 @book_comments_bp.route("/<int:book_comment_id>", methods=["DELETE"])
 @jwt_required()
-def delete_book_comment(book_comment_id):
+def delete_book_comment(book_comment_id, book_id):
 
     # check if the authenticated user owns the book_comment
     user = get_jwt_identity()
@@ -78,29 +78,32 @@ def delete_book_comment(book_comment_id):
 
 
 
-
-
-
-
-
 # /books/book_id/book_comments/book_comment_id- PUT, PATCH - edit a book_comment entry
 @book_comments_bp.route("/<int:book_comment_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_book_comment(book_id, book_comment_id):
+    # user
+    user = int(get_jwt_identity())
+    
     # get the info from the body of the request
     body_data = request.get_json()
     # get the book_comment from books_shelves
     stmt = db.select(BookComment).filter_by(book_comment_id=book_comment_id)
     book_comment = db.session.scalar(stmt)
+
     # if the book_comment exists
     if book_comment:
+        if book_comment.user_id==user:
         # update book_comment        
-        book_comment.comment = body_data.get("comment") or book_comment.comment
-        # commit to books_shelves
-        db.session.commit()
+            book_comment.comment = body_data.get("comment") or book_comment.comment
+            # commit to books_shelves
+            db.session.commit()
+            # return acknowledgement 
+            return book_comment_schema.dump(book_comment)
+        else:
+            return{"message": f"User does not own book comment............."}
 
-        # return acknowledgement 
-        return book_comment_schema.dump(book_comment)
+
     # else
     else:
         # return an error message
