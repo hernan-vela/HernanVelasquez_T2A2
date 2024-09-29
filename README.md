@@ -2,6 +2,11 @@
 ## HernanVelasquez_T2A2 
 ## API Server
 
+### Problem solved by the app - Reason to create Books & Bookshelves
+
+Reading is one of the most effective ways of self-learning, and learning skills has made us capable of transforming our world. Although, according to The World Population Review website (2024)[^WPR], out of 98 countries, only 9 of them read more than 7 books per person in a year.
+Goodreads is an application that allows readers to post, share and read information about books that they like or have read. Still, we need more tools that incentivise our interaction with books, and mobile applications are a great tool to make people engage with something.
+That is why, I would like to create an application that allows us to interact with a readers community that wants to learn more and more, to keep transforming our world.
 
 ### Allocation and tracking of tasks throughout the API project
 
@@ -127,6 +132,48 @@ Working on documentation
 
 ![project-finished](./docs/trello-screenshots/Screenshot%202024-09-29%20at%203.02.09 AM.png)
 Project finished
+
+
+#### How to run the application
+
+First, open the folder from your Terminal, access the ```src``` folder and from there create a new virtual environment to avoid any discrepancies while running the app.
+
+```
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Here, load all the requirements to execute the app as expected
+
+```
+pip3 install -r requirements.txt
+```
+
+Next, you need to create the database of Books & Bookshelves to store and retrive the information of the application. You can start creating a database in PostgreSQL called ```books_bookshelves```. Follow the code below to complete this task:
+
+```
+reader-user@PC ~ % psql
+postgre=# CREATE DATABASE books_shelves;
+postgre=# CREATE USER reader_dev WITH PASSWORD 'ChooseYourPasswordHere';
+postgre=# GRANT ALL PRIVILEGES ON DATABASE books_shelves TO reader_dev;
+postgre=# \c books_shelves 
+postgre=# GRANT ALL ON SCHEMA public to reader_dev;
+```
+Then from another Terminal tab, from the same location of the ```src`` folder, execute the next commands to create all the tables and populate them.
+
+```
+flask db create
+flask db seed
+```
+
+At this point, you should have a database called ```books_bookshelves``` with table already populated with data, and ready to start interacting with the designated API. Only activate Flask, by running from the ```src``` the command ```flask run``` and you are ready to go. Happy readings!
+
+
+
+
+
+
+
 
 ### Third-Party, Packages and Dependencies used in the API
 
@@ -915,6 +962,8 @@ Amended entry:
 
 
 ### Resources
+
+[^WPR]: The World Population Review, 2024, *Average Books Read Per Year by Country 2024*, accessed 27 Sep 2024, https://worldpopulationreview.com/country-rankings/average-books-read-per-year-by-country
 
 [^flask]: Python Basics, 2021, *What is Flask Python*, accessed 27 Sep 2024, https://pythonbasics.org/what-is-flask-python/ 
 
