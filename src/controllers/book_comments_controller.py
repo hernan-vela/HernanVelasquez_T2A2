@@ -70,11 +70,11 @@ def delete_book_comment(book_comment_id, book_id):
         db.session.delete(book_comment)
         db.session.commit()
         # return acknowledgement message
-        return {"message": f"Book_comment {book_comment_id} deleted successfully!"}
+        return {"message": f"Book comment {book_comment_id} deleted successfully!"}
     # else
     else:
         # return error message
-        return {"error": f"Book_comment with id {book_comment_id} does not exist"}, 404
+        return {"error": f"Book comment with id {book_comment_id} does not exist"}, 404
 
 
 
@@ -82,11 +82,12 @@ def delete_book_comment(book_comment_id, book_id):
 @book_comments_bp.route("/<int:book_comment_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_book_comment(book_id, book_comment_id):
-    # user
+    # confirms user owns the comment to modify
     user = int(get_jwt_identity())
     
     # get the info from the body of the request
     body_data = request.get_json()
+
     # get the book_comment from books_shelves
     stmt = db.select(BookComment).filter_by(book_comment_id=book_comment_id)
     book_comment = db.session.scalar(stmt)
@@ -94,17 +95,27 @@ def update_book_comment(book_id, book_comment_id):
     # if the book_comment exists
     if book_comment:
         if book_comment.user_id==user:
-        # update book_comment        
+            # only 'comment' field is modifiable
+            modifiable_fields = {"comment"}
+
+            # Check if body_data contains any non-modifiable fields
+            if not set(body_data.keys()).issubset(modifiable_fields):
+                non_modifiable_fields = set(body_data.keys()) - modifiable_fields
+                return {
+                    "error": f"Invalid fields in the request. Only 'comment' can be modified."
+                }, 400
+
+            # update book_comment        
             book_comment.comment = body_data.get("comment") or book_comment.comment
             # commit to books_shelves
             db.session.commit()
             # return acknowledgement 
             return book_comment_schema.dump(book_comment)
         else:
-            return{"message": f"User does not own book comment............."}
+            return{"message": f"Comments can only be modified by the owner."}, 403
 
 
     # else
     else:
         # return an error message
-        return {"error": f"Book_comment with id {book_comment_id} not found"}, 404
+        return {"error": f"Book comment with id {book_comment_id} not found"}, 404

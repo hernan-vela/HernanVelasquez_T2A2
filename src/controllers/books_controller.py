@@ -1,13 +1,10 @@
-# ELIMINATE date TO RESTORE
-from datetime import datetime, date
+from datetime import datetime
  
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from init import db
 from models.books import Book, book_schema, books_library_schema
-# ELIMINATE MODEL OF BOOK COMMENT RESTORE 
-from models.book_comments import BookComment
 
 from controllers.book_comments_controller import book_comments_bp
 

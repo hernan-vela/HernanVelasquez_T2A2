@@ -28,11 +28,14 @@ class Book(db.Model):
     # schema for one book
 class BookSchema(ma.Schema):
 
+    book_comments = fields.List(fields.Nested('BookCommentSchema', only=["user", "date", "comment"]))
+
     class Meta:
-        fields = ("book_id", "title", "author", "language", "translator", "publisher", "publisher_city", "publication_date", "ebook_isbn", "print_isbn")
+        fields = ("book_id", "title", "author", "language", "translator", "publisher", "publisher_city", "publication_date", "ebook_isbn", "print_isbn", "book_comments")
 
 # to handle a single 'books' object
 book_schema = BookSchema()
+
 
 # 'books' schema to fetch all the books
 class BookLibrarySchema(ma.Schema):
@@ -43,17 +46,6 @@ class BookLibrarySchema(ma.Schema):
 # to handle a list of books objects
 books_library_schema = BookLibrarySchema(many=True)
 
-
-
-
-# # 'books' schema to a book and its comments
-# class BookLibrarySchema(ma.Schema):
-
-#     class Meta:
-#         fields = ("book_id", "title", "author")
-
-# # to handle a list of books objects
-# books_library_schema = BookLibrarySchema(many=True)
 
 
 

@@ -445,14 +445,14 @@ If the book was not found in the bookshelf, a message is displayed saying "Book 
 		"title": "Requiem for a nun",
 		"author": "William Faulkner"
 	},
-	"book_comment_id": 12,
-	"date": "2024-08-10",
+	"book_comment_id": 10,
+	"date": "2024-09-29",
 	"comment": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
 }
 ```
 
-Function registered at ```book_comments_controller.py```. Any registered user can make a comment on any existent book in 'books' entity. To do this, the function validates that the person making the comment is registered with ```@jwt_required```, then it takes the data from the body and loads it according to the book schema.
-Next, with the 'book_id' in the http path, the book is found using the Book model, and if it exists, the comment is taken and added to the 'book_comments' entity.
+Function registered at ```book_comments_controller.py```. Any registered user can make a comment on any existent book in 'books' entity. To do this, the function validates that the person making the comment is registered with ```@jwt_required```, then it takes the data from the body and loads it.
+Next, with the 'book_id' the book is found using the Book model, and if it exists, the comment is taken and added to the 'book_comments' entity.
 If the book_id does not exist, a message is displayed saying "Book with id {book_id} not found"
 
 
@@ -465,17 +465,79 @@ If the book_id does not exist, a message is displayed saying "Book with id {book
 	"comment": "Only portion of comment entry that can be modified"
 }
 ```
+
+**Response:**(Example with user_id=6 and book_comment_id=18)
+
+```JSON
+{
+	"user": {
+		"user_id": 6,
+		"user_name": "Curio Cassi"
+	},
+	"book": {
+		"book_id": 1,
+		"title": "Requiem for a nun",
+		"author": "William Faulkner"
+	},
+	"book_comment_id": 18,
+	"date": "2024-09-29",
+	"comment": "Faulkner rocks."
+}
+```
+
+Function registered at ```book_comments_controller.py```. The function uses the ```get_jwt_identity``` to confirm the user identity, then it checks with 'book_comment_id' whether the comment exists, and if 'user' owns such book comment. If it is not the case, a message is displayed saying "Comments can only be modified by the owner."
+Next, the program confirms that 'user' only tries to modify the 'comment' field if not a error message is prompted as f"Invalid fields in the request. Only 'comment' can be modified."
+Finally, if the program overcame the previous steps, the new comment is taken from the body, committed and return the new modified comment.
+
+Original comment:
+```JSON
+{
+	"user": {
+		"user_id": 6,
+		"user_name": "Curio Cassi"
+	},
+	"book": {
+		"book_id": 1,
+		"title": "Requiem for a nun",
+		"author": "William Faulkner"
+	},
+	"book_comment_id": 18,
+	"date": "2024-09-29",
+	"comment": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
+}
+```
+
+Amended comment:
+```JSON
+{
+	"user": {
+		"user_id": 6,
+		"user_name": "Curio Cassi"
+	},
+	"book": {
+		"book_id": 1,
+		"title": "Requiem for a nun",
+		"author": "William Faulkner"
+	},
+	"book_comment_id": 18,
+	"date": "2024-09-29",
+	"comment": "Faulkner rocks."
+}
+```
+
+**Operation:** Delete a comment
+**HTTP verb:** DELETE
+**Path:** http://localhost:8080/books/<int:book_id>/book_comments/<int:book_comment_id>
+**Body:** None
+**Auth:** Token of comment owner
 **Response:**
-
-
-**Operation:** 
-**HTTP verb:** 
-**Path:** 
-**Auth:**
-**Response:**
-
-
-
+```JSON
+{
+	"message": "Book comment <int:book_comment_id> deleted successfully!"
+}
+```
+Function registered at ```book_comments_controller.py```. The function uses ```get_jwt_identity``` to confirm the user identity. Then, the program takes the 'user_id' and 'book_comment_id' to determine existence and owenership of the comment. If the book comment is not found or the user is not the owner of the comment, a message is prompted saying "Book comment not found or not owned by the user."
+Finally, if the program overcame these steps, the comment with 'book_comment_id' is deleted and an acknowledgement message is displayed as "Book comment {book_comment_id} deleted successfully!"
 
 
 #### Operation from the book controller
@@ -519,7 +581,7 @@ Function registered at ```books_controller.py```. This function can be performed
 It takes the request from the http path and returns a list of books in JSON format with {"book_id", "title", "author"}
 
 
-**Operation:** Fetch a specific book from the 'books' entity
+**Operation:** Fetch a specific book with its comments from the 'books' entity
 **HTTP verb:** GET
 **Path:** http://localhost:8080/books/<int:book_id>
 **Body:** None
@@ -536,7 +598,25 @@ It takes the request from the http path and returns a list of books in JSON form
 	"publisher_city": "Chicago",
 	"publication_date": "1946-05-05",
 	"ebook_isbn": "9380590471004",
-	"print_isbn": "9781565892125"
+	"print_isbn": "9781565892125",
+	"book_comments": [
+		{
+			"user": {
+				"user_id": 3,
+				"user_name": "quino.qaro"
+			},
+			"date": "2024-08-29",
+			"comment": "This book became my lighthouse."
+		},
+		{
+			"user": {
+				"user_id": 1,
+				"user_name": "hernan-vela"
+			},
+			"date": "2024-09-29",
+			"comment": "It has a great narrative and a spiritual map of India."
+		}
+	]
 }
 ```
 
