@@ -56,6 +56,9 @@ def add_book_to_bookshelf(bookshelf_id, book_id):
     if stored_book:
         return {"message": f"Book {book_id} already exists in bookshelf {bookshelf_id}"}, 400
 
+    # get the request body data
+    body_data = request.get_json()
+
     # add the book to the bookshelf
     storedBook = StoredBook(
         book_id=book_id,

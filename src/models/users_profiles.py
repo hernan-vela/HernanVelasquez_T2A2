@@ -1,5 +1,4 @@
 from init import db, ma, bcrypt, jwt
-# unpack information of entities to establish relationship
 from marshmallow import fields
 from marshmallow.validate import Regexp
 
@@ -31,7 +30,6 @@ class UserSchema(ma.Schema):
         fields = ("user_id", "name", "email", "user_name", "password", "is_admin", "book_comments")
 
 # to handle a single user object
-
 user_schema = UserSchema(only=["user_id", "name", "user_name"])
 
 # to handle a list of user objects
@@ -46,9 +44,6 @@ class AllUserSchema(ma.Schema):
     class Meta:
         fields = ("user_id", "name", "email", "user_name", "password", "is_admin")
 
-# to handle a single user object
-
-# all_user_schema = AllUserSchema(only=["user_id", "name", "email"])
 
 # to handle a list of user objects
 all_users_schema = AllUserSchema(many=True, only=["user_id", "name", "email"])

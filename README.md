@@ -3,7 +3,7 @@
 ## API Server
 
 
-### Allocation and tracking of tasks throuhout the API project
+### Allocation and tracking of tasks throughout the API project
 
 Considering the timeframe, and workload for my skills and priorities, the project was planned with 5 main stages, as follows: draft models, draft controllers, complete CRUD operations for app features, test endopoints and debugging until endpoints work flawlessly. The layout of the project plan can be witnessed in **Trello** where the cards show deadlines, and additional checklists to detail each stage.
 
@@ -127,6 +127,175 @@ Working on documentation
 
 ![project-finished](./docs/trello-screenshots/Screenshot%202024-09-29%20at%203.02.09 AM.png)
 Project finished
+
+### Third-Party, Packages and Dependencies used in the API
+
+- **Flask**: web framework that gathers Python modules to develop an API project with less complications, reducing the level of detail, and errors created (Python Basics, 2021)[^flask]
+
+- **os**: module in Python that helps to interact with the **o**perating **s**ystem, at performing standarised tasks such as creating, opening and removing files, among others (GeeksforGeeks, 2024)[^os]. In this project, 'os' is used to interact/access environment variables, such as the database url and the jwt token.
+
+- **Marshmallow**: ORM that provide a group of schemas to validate input, serialise and deserialise information that is exchanged between the front and back end (Marshmallow, 2024)[^marshmallow]
+
+- **fields** from Marshmallow: unpacks information of entities to establish relationships. For example, in this project it allows to take attributes of an entity, filter them and create a more meaningful response for the user. (Marshmallow, 2024)[^m.fields]
+
+- **bcrypt**: cryptographic algorithm used to mask/secure passwords. Bcrypt hides the characters of the password in an apparently random bundle of characters of fixed-length. This value is stored in the database and cannot be reversed to read the password from the random string (freeCodeCamp, 2024)[^bcrypt].
+
+- **Json Web Token (jwt)**: it uses the structure of Header/Payload/Signature to authenticate users, facilitate and simplify the interaction between client and server. It comprises the type of token used and signing algorithm (Header); claims or statements that determine the registered, public or private nature of the interaction (Payload); and a signature that verifies the message and no one has tampered with it along the route (Signature)(JWT, 2024)[^jwt].
+
+- **jwt_required and get_jwt_identity** from flask: these are authentication tools. When a user has already been logged in, the 'jwt_required' protect routes, avoiding third parties to intersect and tamper with information. And with the 'get_jwt_identity' the identity of the user is checked through a JWT in a protected route (Flask, 2022)[^flask-kwt].
+
+- **SQLAlchemy**: denominated the Python SQL, it helps to access databases using Python commands. All the operations performed from the 'psql' such as, 'SELECT', 'FILTER', 'DELETE', 'CREATE', 'DROP', 'ALTER TABLE', among others, can be implemented by using the Python language to automatised the processes (SQlAlchemy, 2024)[^sqlalchemy]
+
+### Pros and Cons of using PostgreSQL
+
+The main advantage of PostreSQL is this DBMS is free to use and distribute, it can handle large amounts of data, supports formats such as JSON, spatial data, and the open-source nature make it helpful when encountering problems, because there are several blogs and documentation online for troubleshooting (PostgreSQL, 2024)[^psql].
+
+Although, some of the drawbacks of the PostgreSQL: keep records of previous keys (as a momentary back-up), which consumes more memory and computing time. Also, it has a sanitisation process to clean and delete all inactive copies, but sometimes the multi-version storage surpasses the sanitisation process and the database gets overloaded (Andy Pavlo, 2023)[^A.Pavlo]
+
+### Features, purpose and functionalites of ORM used in this app
+
+The Books & Bookshelves API has the standard CRUD operations that are mostly applied throughout all the entities in the database. It employes SQLAlchemy to exchange and communicate information between PostgreSQL and the framework, and it uses Marshmallow to serialise and deserialise information between the front end and the back end.
+Here it will be discussed the most illustratives and relevants features of the API:
+
+#### User registration
+
+It takes information from the user, and takin the ```UserSchema``` as reference the infromatio is validated. The password created by the user is hashed with Bcrypt and a new profile created with ```{"user_id", "name", "email", "user_name", "password", "is_admin"}```. In addition, the code automatically creates three bookshelves by default where the user stores the books that they have "read", they are currently "reading", and they plan "to-read".
+
+![user-registration](./docs/code-snipets/user-registration.png)
+*Code to create a new user in the database*
+
+#### User login
+
+It requests the email and password fromn the body of request. The code automatically filters the the ```users_profiles``` entity by using the email as reference, and it implements a the JWT functonalities to generate a token with expiry date. This token will allow the user to perform other tasks such as query books, book comments, add books to their bookshelves, modifiy books stored in their shelves, delete their own books, and so on.
+If the email and password do not match, the system prompts a message explaining this result.
+
+![user-login](./docs/code-snipets/user-login.png)
+*Code to login an existent user*
+
+#### Consulting books from the database
+
+The app offers the function to any user to query the list of all the books in the database and query a specific book with its bibliographical information and all the comments associated with that book made by users of the app.
+
+#### Adding a book to a any of your own bookshelves
+
+Each user can add any book to any of their own three bookshelves, and only their bookshelves. The function ```add_book_to_bookshelf``` identifies the user as a registered user, then confirms the existence and ownership of the bookshelf. Next the function confirms that the book desired actually exists. Finally, the book is added to the respective bookshelf.
+If at any point any of these conditions are not met, the user receives a message explaining why the operation cannot be performed.
+
+
+![add-book-bookshelf](./docs/code-snipets/add-book-bookshelf.png)
+*Code to add a book to a owned bookshelf*
+
+#### Posting a comment about any book
+
+The information of the book to comment comes from the URL. The function takes the ```book_id```, verify that the user is registered, and takes the ```"comment"``` from input by the user in the body request. Then, the comment is added to the profile of the book.
+
+#### Amending a comment about a book
+
+The only person that can modify a comment is the one that posted such comment. The function ```update_book_comment``` takes the ```book_id``` and the ```book_comment_id``` to check existence and ownership of the comment. If the information is valid, the user can modify the ```"comment"``` attribute, and only this one. Once the comment is changed, the system returns an acknowledgemente message.
+If at any point in this logic, any of the conditions are not met, the user receives a message explaining why the operation could not be performed.
+
+![amend-comment](./docs/code-snipets/amend-comment.png)
+*Code to amend a comment*
+
+#### Delete a comment about a book
+
+The function ```delete_book_comment``` takes the information of ```book_id``` and ```book_comment_id``` from the URL. Then it checks existence and ownership of the comment, and if these are true, the comment is deleted.
+If at any stage, any of these conditions are not met, the user receives a message explaining why the operation cannot be completed.
+
+![delete-comment](./docs/code-snipets/delete-comment.png)
+*Code to delete a comment*
+
+
+
+### Initial stage of ERD for the Books & Shelves API
+
+
+![ERD-v.0](./docs/drawio-screenshots/(v.0)BooksApp-ERD.jpg)
+
+The project was initially conceived with 5 entities: UserProfile, Books, BookComments, Bookshelf and StoredBook with relationships among them as follows:
+
+- **UserProfile** (PK: user_id) -- 1 to Many ---> **Books** (FK: user_id): one user can be linked to several books.
+
+- **UserProfile** (PK: user_id) -- 1 to Many ---> **Bookshelf** (FK: user_id): one user can own more than one bookshelf.
+
+- **UserProfile** (PK: user_id) ---- 1 to many ---> **BookComments** (FK: user_id): one user can create many comments of different books.
+
+- **Books** (PK: book_id) -- 1 to Many ---> **BookComments** (FK: book_id): one book can have several comments.
+
+- **Books** (PK: book_id) -- 1 to Many ---> **StoredBook** (FK: book_id): one book can be stored in several bookshelves, then one book can have more than record in the StoreBook entity.
+
+- **Bookshelf** (PK: bookshelf_id) -- 1 to Many ---> **StoredBook** (FK: bookshelf_id): one entry in the bookshelf can be stored more than once in the StoredBook entity.
+
+The 'StoredBook' entity has been established as a join table to facilitate the relation that would exist between 'Books' and 'Bookshelf', which is a Many-Many relation. With the StoredBook entity the complexity of Many-Many is reduced and become manageble in the database.
+
+### Normalised databe of ERD for the Books & Shelves API
+
+![ERD-normalised](./docs/drawio-screenshots/(v.4)BooksApp.png)
+
+After analysis of the database and its implementation, the database has been arranged with more meaningful names to facilitate the coding process, the entities with the bookshelves and the books stored have been restructured, and the relationship between the user entity and the books entity has been dismissed to make a streamline interaction among all the tables.
+
+- **users_profiles** (PK: user_id) -- 1 to Many ---> **bookshelves** (FK: user_id): one user can be linked to 3 bookshelves with status "Read", "Reading" and "To-read"
+
+- **users_profiles** (PK: user_id) -- 1 to Many ---> **book_comments** (FK: user_id): one user can have several comments on different books.
+
+- **books** (PK: book_id) ---- 1 to many ---> **book_comments** (FK: book_id): one book can have many comments.
+
+- **books** (PK: book_id) -- 1 to Many ---> **stored_books** (FK: book_id): one book can be stored in different entries.
+
+- **bookshelves** (PK: bookshelf_id) -- 1 to Many ---> **stored_books** (FK: bookshelf_id): one entry in the bookshelf can be stored more than once in the stored_books entity.
+
+In addition, the attributes of 'start_date' and 'end_date' have been transferred from 'bookshelves' to 'stored_books' while it makes more sense that a user starts reading and finishes a book on any given date, for a book that is ***stored*** in 'stored_books'. Also, the 'review' attribute from the 'bookshelves' is suppressed while the comments fulfil the purpose of commenting about a book
+
+### Models relationships
+
+- **User Model**: establishes a relation of more than one bookshelf per user, with cascading, in case that a user is deleted from the database, their bookshelves are deleted as well.
+It also has a relationship where a user can create many comments on one or more books.
+
+![user-model](./docs/code-snipets/user-model.png)
+*Example of User Model relationships*
+
+This model also has to different schema: ```UserSchema``` to return the most meaningful information of an user, includins their book comments, and a ```AllUserSchema``` to displayed all the users when the admin requests them, but in a simplified version with only ```{"user_id}, "name", "email"}```
+
+![user-schemas](./docs/code-snipets/user-schemas.png)
+*User Schemas in code*
+
+- **Book Model**: here one book can have many comments what means that many users can comment on different books without overlaps. Also, one book can be stored simultaneously in more than one 'stored_book' entry, this helps with the fact that one user with "read", "reading" and "to-read" bookshelves can stored many books one or more of them at the same time.
+
+![book-model](./docs/code-snipets/book-model.png)
+*Example of the Book Model relationships*
+
+Here, we also encounter one ```BookSchema``` to retrieve the information of one single books with all its linked comments, and another schema called ```BookLibrarySchema``` to display all the books in the library, but just the relevant information of ```{"book_id", "title", "author"}```.
+
+![book-schemas](./docs/code-snipets/user-schemas.png)
+*Book Schemas in code*
+
+- **BookComment Model**: accordingly to the Book Model, here a user can make several comments, and one book can have many comments.
+
+![book-comment-model](./docs/code-snipets/book-comments-model.png)
+*Example of the BookComment Model relationships*
+
+In this case, there is only one BookComment schema what meets all the purposes of the app
+
+![book-comment-schema](./docs/code-snipets/book-comments-schema.png)
+*BookComment Schema in code*
+
+- **Bookshelf Model**: there is a relationship where one user can have three bookshelves, "read", "reading" and "to-read". Also, one bookshelf can have many records in the 'stored_books' entity. This model disrupts the complicated relationship between 'books' and 'bookshelves', where many books could be in many bookshelves. With the 'stored_books' join table, the DBMS is more effective.
+
+![bookshelf-model](./docs/code-snipets/bookshelf-model.png)
+*Example of the Bookshelf Model relationships*
+
+In this case, one single Bookshelf schema is valid to handle the information, according to the API features.
+
+![bookshelf-schema](./docs//code-snipets/bookshelves-schema.png)
+*Bookshelf schema in code*
+
+- **StoredBook Model**: given its nature of join table between 'books' and 'bookshelves', the StoredBook Model is such that one book can be stored in many entries of the 'stored_books' table, and one bookshelf can have several entries in the 'stored_books' table.
+
+![stored-book-model](./docs/code-snipets/stored-book-model.png)
+*Example of the StoredBook Model relationships*
+
+Here, with one schema, it is possible the retrieve the information of ```{"stored_book_id", "book_id", "title", "author", "bookshelf_id", "user", "status"}```
+
 
 
 ### Operation of API endpoints
@@ -742,3 +911,27 @@ Amended entry:
 	"print_isbn": "2281565892125"
 }
 ```
+
+
+
+### Resources
+
+[^flask]: Python Basics, 2021, *What is Flask Python*, accessed 27 Sep 2024, https://pythonbasics.org/what-is-flask-python/ 
+
+[^os]: Geeks for Geeks, 2024, *OS Module in Python with Examples*, accessed 27 Sep 2024, https://www.geeksforgeeks.org/os-module-python-examples/
+
+[^marshmallow]: Marhsmallow, 2024, *marshmallow: simplified object serialization*, accessed 27 Sep 2024, https://marshmallow.readthedocs.io/en/stable/
+
+[^m.fields]: Marhsmallow, 2024, *Fields*, accessed 27 Sep 2024, https://marshmallow.readthedocs.io/en/stable/marshmallow.fields.html
+
+[^bcrypt]: freeCodeCamp, 2024, *How to Hash Passwords with bcrypt in Node.js*, accessed 27 Sep 2024, https://www.freecodecamp.org/news/how-to-hash-passwords-with-bcrypt-in-nodejs/
+
+[^jwt]: JWT, 2024, *Introduction to JSON Web Tokens*, accessed 27 Sep 2024, https://jwt.io/introduction
+
+[^flask-kwt]: Flask, 2022, *Basic Usage*, accessed 27 Sep 2024, https://flask-jwt-extended.readthedocs.io/en/stable/basic_usage.html
+
+[^sqlalchemy]: SQLAlchemy, 2024, *PostgreSQL*, accessed 27 Sep 2024, https://docs.sqlalchemy.org/en/20/dialects/postgresql.html
+
+[^psql]: PostgreSQL 16 2024, Chapter 13. Concurrency Control, 13.1 Introduction, accessed 26 Sep 2024, https://www.postgresql.org/docs/current/mvcc-intro.html
+
+[^A.Pavlo]: Andy Pavlo 2023, The Part of PostgreSQL We Hate the Most, accessed 27 Sep 2024, https://www.cs.cmu.edu/~pavlo/blog/2023/04/the-part-of-postgresql-we-hate-the-most.htm

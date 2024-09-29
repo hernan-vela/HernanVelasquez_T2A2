@@ -1,5 +1,4 @@
-from init import db, ma, bcrypt, jwt
-# 'fields' unpack information of entities to establish relationships 
+from init import db, ma, bcrypt, jwt 
 from marshmallow import fields
 from marshmallow.validate import OneOf
 

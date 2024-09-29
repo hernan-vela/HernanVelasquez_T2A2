@@ -1,5 +1,4 @@
 from init import db, ma, bcrypt, jwt
-# unpack information of entities to establish relationships 
 from marshmallow import fields
 from marshmallow.validate import Length, And, Regexp
 
@@ -25,7 +24,7 @@ class Book(db.Model):
     # relationship between entities store_books --> books
     stored_books = db.relationship('StoredBook', back_populates='book')
 
-    # schema for one book
+# schema for one book
 class BookSchema(ma.Schema):
 
     book_comments = fields.List(fields.Nested('BookCommentSchema', only=["user", "date", "comment"]))

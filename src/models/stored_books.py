@@ -1,5 +1,4 @@
 from init import db, ma, bcrypt, jwt
-# unpack information of entities to establish relationships 
 from marshmallow import fields
 
 class StoredBook(db.Model):

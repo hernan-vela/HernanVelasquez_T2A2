@@ -17,7 +17,6 @@ book_comments_bp = Blueprint("book_comments", __name__, url_prefix="/<int:book_i
 def create_book_comment(book_id):
     # get the data from the body of the request
     body_data = request.get_json()
-    # ORIGINAL - body_data = book_comment_schema.load(request.get_json())
 
     # fetch the book with id=book_id
     stmt = db.select(Book).filter_by(book_id=book_id)
